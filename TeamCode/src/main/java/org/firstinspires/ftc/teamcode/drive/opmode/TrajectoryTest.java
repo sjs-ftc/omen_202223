@@ -33,7 +33,23 @@ public class TrajectoryTest extends LinearOpMode {
                 .strafeRight(24)
                 .build();
 
-        TrajectorySequence trajectorySequence = drive.trajectorySequenceBuilder(new Pose2d(36, -60, Math.PI/2))
+        TrajectorySequence redLeft = drive.trajectorySequenceBuilder(new Pose2d(-36, -60, Math.PI/2))
+                .strafeLeft(24)
+                .waitSeconds(1)
+                .forward(48)
+                .turn(Math.toRadians(90))
+                .back(36)
+                .waitSeconds(1)
+                .forward(36)
+                .waitSeconds(1)
+                .back(36)
+                .waitSeconds(1)
+                .forward(12)
+                .turn(Math.toRadians(90))
+                .forward(24)
+                .build();
+
+        TrajectorySequence redRight = drive.trajectorySequenceBuilder(new Pose2d(36, -60, Math.PI/2))
                 .strafeRight(24)
                 .waitSeconds(1)
                 .forward(48)
@@ -49,11 +65,43 @@ public class TrajectoryTest extends LinearOpMode {
                 .forward(24)
                 .build();
 
+        TrajectorySequence blueRight = drive.trajectorySequenceBuilder(new Pose2d(-36, 60, 3*Math.PI/2))
+                .strafeRight(24)
+                .waitSeconds(1)
+                .forward(48)
+                .turn(Math.toRadians(-90))
+                .back(36)
+                .waitSeconds(1)
+                .forward(36)
+                .waitSeconds(1)
+                .back(36)
+                .waitSeconds(1)
+                .forward(12)
+                .turn(Math.toRadians(-90))
+                .forward(24)
+                .build();
+
+        TrajectorySequence blueLeft = drive.trajectorySequenceBuilder(new Pose2d(36, 60, 3*Math.PI/2))
+                .strafeLeft(24)
+                .waitSeconds(1)
+                .forward(48)
+                .turn(Math.toRadians(90))
+                .back(36)
+                .waitSeconds(1)
+                .forward(36)
+                .waitSeconds(1)
+                .back(36)
+                .waitSeconds(1)
+                .forward(12)
+                .turn(Math.toRadians(90))
+                .forward(24)
+                .build();
+
         waitForStart();
 
         if (isStopRequested()) return;
 
-        drive.followTrajectorySequence(trajectorySequence);
+        drive.followTrajectorySequence(redLeft);
 
         while (!isStopRequested() && opModeIsActive()) ;
     }
