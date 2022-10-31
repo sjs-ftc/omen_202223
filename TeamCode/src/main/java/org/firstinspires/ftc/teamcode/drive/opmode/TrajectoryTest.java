@@ -101,7 +101,7 @@ public class TrajectoryTest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        drive.followTrajectorySequence(redLeft);
+        drive.followTrajectorySequence(redRight);
 
         while (!isStopRequested() && opModeIsActive()) ;
     }
