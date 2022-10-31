@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import android.util.Log;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -29,12 +31,13 @@ public class Main extends LinearOpMode {
 
         while (!isStopRequested()) {
             if (gamepad1.a) {
+                Log.d("Claw State", "A pressed: ");
                 if (clawPos) {
                    claw.closeClaw(rightClaw,leftClaw);
                    clawPos = false;
                 }
                 else {
-                    claw.closeClaw(rightClaw,leftClaw);
+                    claw.openClaw(rightClaw,leftClaw);
                     clawPos = true;
                 }
             }
