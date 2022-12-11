@@ -8,23 +8,24 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Claw {
 
-    public static double rightServoPosition = 0.0;
-    public static double leftServoPosition = 1.0;
+    Servo clawServo;
+    public static double servoPosition = 0.0;
 
-    public Claw() {
+    public Claw(HardwareMap hardwareMap) {
+        clawServo = hardwareMap.servo.get("claw");
     }
 
-    public void openClaw(Servo right, Servo left) throws InterruptedException {
-        rightServoPosition = 0.0;
-        leftServoPosition = 1.0;
-        right.setPosition(rightServoPosition);
-        left.setPosition(leftServoPosition);
+    public void openClaw() throws InterruptedException {
+        servoPosition = -.75;
+        clawServo.setPosition(servoPosition);
     }
 
-    public void closeClaw(Servo right, Servo left) throws InterruptedException {
-        rightServoPosition = 0.69;
-        leftServoPosition = 0.25;
-        right.setPosition(rightServoPosition);
-        left.setPosition(leftServoPosition);
+    public void closeClaw() throws InterruptedException {
+        servoPosition = 0.9;
+        clawServo.setPosition(servoPosition);
+    }
+
+    public double getPos() {
+        return clawServo.getPosition();
     }
 }

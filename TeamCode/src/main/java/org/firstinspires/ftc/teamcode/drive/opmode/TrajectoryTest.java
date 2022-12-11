@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -22,8 +23,11 @@ public class TrajectoryTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
+        Servo armLift;
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        armLift = hardwareMap.servo.get("angleArm");
+
+        armLift.setPosition(.75);
 
         Pose2d startPose = new Pose2d(36,-60, Math.PI/2);
 
