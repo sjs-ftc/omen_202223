@@ -1,23 +1,30 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
-import android.util.Log;
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.Angler;
-import org.firstinspires.ftc.teamcode.drive.Claw;
 import org.firstinspires.ftc.teamcode.drive.Lift;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+
+import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 
 @Autonomous()
 public class LiftTest extends LinearOpMode {
+
+
+
+    private void slowAngle(double angle, Angler angler) {
+        double currentAngle = angler.getAngle();
+        double tick = (angle - currentAngle)/10.0;
+
+        for (int u = 0; u < 10; u++) {
+            angler.setAngle(currentAngle + tick);
+            currentAngle = angler.getAngle();
+            double startWait = getRuntime();
+            while (getRuntime() < startWait + .1) {
+            }
+        }
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -26,12 +33,16 @@ public class LiftTest extends LinearOpMode {
         angler.setAngle(.75);
         waitForStart();
 
-        lift.goToHeight(300);
-        lift.goToHeight(600);
-        lift.goToHeight(300);
-        lift.goToHeight(150);
+        lift.goToHeight(750);
+        slowAngle(HORIZ_ANGLE, angler);
+
+        double startWait = getRuntime();
+        while (getRuntime() < startWait + 3) {
+        }
+        lift.goToHeight(MINIMUM_HEIGHT);
+        angler.setAngle(.95);
         while (!isStopRequested()) {
-            angler.setAngle(.65);
+            //angler.setAngle(.65);
         }
     }
 }

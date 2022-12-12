@@ -1,27 +1,27 @@
 package org.firstinspires.ftc.teamcode.drive;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
+
+import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
+
 
 public class Claw {
 
     Servo clawServo;
-    public static double servoPosition = 0.0;
+    public static double servoPosition = CLOSED_POS;
 
     public Claw(HardwareMap hardwareMap) {
         clawServo = hardwareMap.servo.get("claw");
     }
 
     public void openClaw() throws InterruptedException {
-        servoPosition = -.75;
+        servoPosition = OPEN_POS;
         clawServo.setPosition(servoPosition);
     }
 
     public void closeClaw() throws InterruptedException {
-        servoPosition = 0.9;
+        servoPosition = CLOSED_POS;
         clawServo.setPosition(servoPosition);
     }
 

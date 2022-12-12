@@ -2,25 +2,22 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import android.util.Log;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.Angler;
 import org.firstinspires.ftc.teamcode.drive.Claw;
+import org.firstinspires.ftc.teamcode.drive.DriveTrain;
 import org.firstinspires.ftc.teamcode.drive.Lift;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+
+import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
+
 
 @TeleOp(group = "drive")
 public class Main extends LinearOpMode {
 
-    public static double drivePower = 5.0/10.0; //power to motors
 
-    private final int START = 150;
     private Gamepad lastGamepad1 = gamepad1;
     private Gamepad lastGamepad2 = gamepad2;
     private boolean clawPos = false;
@@ -29,24 +26,24 @@ public class Main extends LinearOpMode {
 
             int height;
             if (gamepad1.y && !lastGamepad1.y) {
-                height = 650;
+                height = HIGH_POLE;
                 lift.goToHeight(height);
-                angler.setAngle(.25);
+                angler.setAngle(HORIZ_ANGLE);
             }
             else if (gamepad1.x && !lastGamepad1.x) {
-                height = 340;
+                height = LOW_POLE;
                 lift.goToHeight(height);
-                angler.setAngle(.25);
+                angler.setAngle(HORIZ_ANGLE);
             }
             else if (gamepad1.b && !lastGamepad1.b) {
-                height = 600;
+                height = MID_POLE;
                 lift.goToHeight(height);
-                angler.setAngle(.25);
+                angler.setAngle(HORIZ_ANGLE);
             }
             else if (gamepad1.a && !lastGamepad1.a) {
-                height = START;
+                height = MINIMUM_HEIGHT;
                 lift.goToHeight(height);
-                angler.setAngle(.25);
+                angler.setAngle(HORIZ_ANGLE);
             }
         }
 
@@ -66,21 +63,10 @@ public class Main extends LinearOpMode {
             }
         }
 
-        public void drive(SampleMecanumDrive drive) {
-            drive.setWeightedDrivePower(
-                    new Pose2d(
-                            -Math.pow(gamepad1.left_stick_y,3) * drivePower,
-                            -Math.pow(gamepad1.left_stick_x,3) * drivePower,
-                            -Math.pow(gamepad1.right_stick_x,3) * drivePower
-                    )
-            );
-        }
-
-
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DriveTrain drive = new DriveTrain(hardwareMap);
+
         Claw claw = new Claw(hardwareMap);
         Angler angler = new Angler(hardwareMap);
         Lift lift = new Lift(hardwareMap, telemetry);
@@ -90,7 +76,7 @@ public class Main extends LinearOpMode {
         while (!isStopRequested()) {
             manageClaw(claw);
             moveArm(lift, angler);
-            drive(drive);
+            drive.drive(gamepad1);
 
             lastGamepad1 = gamepad1;
             drive.update();
