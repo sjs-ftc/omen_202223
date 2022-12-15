@@ -2,14 +2,15 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import android.util.Log;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.drive.Angler;
 import org.firstinspires.ftc.teamcode.drive.Claw;
-import org.firstinspires.ftc.teamcode.drive.DriveTrain;
 import org.firstinspires.ftc.teamcode.drive.Lift;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 
@@ -22,32 +23,84 @@ public class Main extends LinearOpMode {
     private Gamepad lastGamepad2 = gamepad2;
     private boolean clawPos = false;
 
-        public void moveArm(Lift lift, Angler angler) {
+    private void dropCone(Lift lift, Angler angler, Claw claw) {
+        claw.dropCone();
+        double startWait = getRuntime();
+        while (getRuntime() < startWait + PAUSE_TIME) {
+        }
+        claw.closeClaw();
+        angler.slowAngle(SAFE_ANGLE);
+        lift.goToHeight(MINIMUM_HEIGHT);
+        while (opModeIsActive() && !(lift.getHeight() >= (MINIMUM_HEIGHT - TICK_ERROR) && lift.getHeight() <= (MINIMUM_HEIGHT + TICK_ERROR))) {
+            lift.goToHeight(MINIMUM_HEIGHT);
+        }
+        claw.closeClaw();
+    }
 
-            int height;
-            if (gamepad1.y && !lastGamepad1.y) {
-                height = HIGH_POLE;
-                lift.goToHeight(height);
-                angler.setAngle(HORIZ_ANGLE);
+    public void moveArm(Lift lift, Angler angler, Claw claw) {
+        int height;
+        if (gamepad1.y) {
+            claw.closeClaw();
+            angler.slowAngle(SAFE_ANGLE);
+            lift.goToHeight(HIGH_JUNCTION);
+            while (opModeIsActive() && !(lift.getHeight() >= (HIGH_JUNCTION - TICK_ERROR) && lift.getHeight() <= (HIGH_JUNCTION + TICK_ERROR))) {
+                lift.goToHeight(HIGH_JUNCTION);
             }
-            else if (gamepad1.x && !lastGamepad1.x) {
-                height = LOW_POLE;
-                lift.goToHeight(height);
-                angler.setAngle(HORIZ_ANGLE);
+            angler.slowAngle(HORIZ_ANGLE);
+            return;
+
+        }
+        if (gamepad1.x) {
+            claw.closeClaw();
+            angler.slowAngle(SAFE_ANGLE);
+            lift.goToHeight(LOW_JUNCTION);
+            while (opModeIsActive() && !(lift.getHeight() >= (LOW_JUNCTION - TICK_ERROR) && lift.getHeight() <= (LOW_JUNCTION + TICK_ERROR))) {
+                lift.goToHeight(LOW_JUNCTION);
             }
-            else if (gamepad1.b && !lastGamepad1.b) {
-                height = MID_POLE;
-                lift.goToHeight(height);
-                angler.setAngle(HORIZ_ANGLE);
+            angler.slowAngle(HORIZ_ANGLE);
+            return;
+        }
+        if (gamepad1.b) {
+            claw.closeClaw();
+            angler.slowAngle(SAFE_ANGLE);
+            lift.goToHeight(MID_JUNCTION);
+            while (opModeIsActive() && !(lift.getHeight() >= (MID_JUNCTION - TICK_ERROR) && lift.getHeight() <= (MID_JUNCTION + TICK_ERROR))) {
+                lift.goToHeight(MID_JUNCTION);
             }
-            else if (gamepad1.a && !lastGamepad1.a) {
-                height = MINIMUM_HEIGHT;
-                lift.goToHeight(height);
-                angler.setAngle(HORIZ_ANGLE);
+            angler.slowAngle(HORIZ_ANGLE);
+            return;
+        }
+        if (gamepad1.a) {
+            claw.closeClaw();
+            angler.slowAngle(SAFE_ANGLE);
+            lift.goToHeight(GROUND_JUNCTION);
+            while (opModeIsActive() && !(lift.getHeight() >= (GROUND_JUNCTION - TICK_ERROR) && lift.getHeight() <= (GROUND_JUNCTION + TICK_ERROR))) {
+                lift.goToHeight(GROUND_JUNCTION);
             }
+            angler.slowAngle(GROUND_ANGLE);
+            return;
         }
 
-        public void manageClaw(Claw claw) throws InterruptedException {
+        if (gamepad1.dpad_down) {
+            dropCone(lift, angler, claw);
+        }
+
+        if (gamepad1.dpad_left) {
+            angler.setAngle(GROUND_ANGLE);
+            double startWait = getRuntime();
+            while (getRuntime() < startWait + COLLECT_PAUSE) {
+            }
+            claw.collect();
+        }
+
+        if (gamepad1.dpad_up) {
+            claw.closeClaw();
+            angler.slowAngle(SAFE_ANGLE);
+        }
+
+    }
+
+        public void manageClaw(Claw claw) {
             if (gamepad1.options && !lastGamepad1.options) {
                 if (clawPos) {
                     claw.closeClaw();
@@ -63,23 +116,37 @@ public class Main extends LinearOpMode {
             }
         }
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        DriveTrain drive = new DriveTrain(hardwareMap);
+    private void drive(SampleMecanumDrive drive, Gamepad gamepad1) {
+        drive.setWeightedDrivePower(
+                new Pose2d(
+                        -Math.pow(gamepad1.left_stick_y,3) * DRIVE_POWER,
+                        -Math.pow(gamepad1.left_stick_x,3) * DRIVE_POWER,
+                        -Math.pow(gamepad1.right_stick_x,3) * DRIVE_POWER
+                )
+        );
+    }
 
-        Claw claw = new Claw(hardwareMap);
-        Angler angler = new Angler(hardwareMap);
-        Lift lift = new Lift(hardwareMap, telemetry);
+    @Override
+    public void runOpMode() {
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        Claw claw = new Claw(this, hardwareMap);
+        Angler angler = new Angler(this, hardwareMap);
+        Lift lift = new Lift(this, hardwareMap, telemetry);
+
+        angler.setAngle(SAFE_ANGLE);
 
         waitForStart();
 
         while (!isStopRequested()) {
             manageClaw(claw);
-            moveArm(lift, angler);
-            drive.drive(gamepad1);
+            moveArm(lift, angler, claw);
+            drive(drive, gamepad1);
 
             lastGamepad1 = gamepad1;
             drive.update();
         }
+
+        angler.setAngle(.90);
     }
 }

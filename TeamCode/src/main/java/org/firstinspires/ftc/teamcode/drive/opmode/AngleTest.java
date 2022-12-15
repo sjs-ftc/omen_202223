@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
+
 import android.util.Log;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -20,12 +22,19 @@ public class AngleTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Angler angler = new Angler(hardwareMap);
+        Angler angler = new Angler(this, hardwareMap);
+        Claw claw = new Claw(this, hardwareMap);
+
+        angler.setAngle(GROUND_ANGLE);
+        claw.collect();
+
         waitForStart();
 
         int i = 0;
         while (!isStopRequested()) {
-            angler.setAngle(.5);
+            claw.dropCone();
+
+
             //angler.setAngle(1.0);
 
             /*

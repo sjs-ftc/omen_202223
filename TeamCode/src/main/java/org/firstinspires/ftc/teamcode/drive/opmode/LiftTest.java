@@ -28,12 +28,12 @@ public class LiftTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Angler angler = new Angler(hardwareMap);
-        Lift lift = new Lift(hardwareMap, telemetry);
+        Angler angler = new Angler(this, hardwareMap);
+        Lift lift = new Lift(this, hardwareMap, telemetry);
         angler.setAngle(.75);
         waitForStart();
 
-        lift.goToHeight(750);
+        lift.depositCone(HIGH_JUNCTION, angler);
         slowAngle(HORIZ_ANGLE, angler);
 
         double startWait = getRuntime();

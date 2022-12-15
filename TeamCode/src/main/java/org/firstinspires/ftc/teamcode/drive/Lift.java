@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -12,8 +13,10 @@ public class Lift {
 
     DcMotorEx leftSlide, rightSlide;
     Telemetry telemetry;
+    LinearOpMode opMode;
 
-    public Lift(HardwareMap hardwareMap, Telemetry telemetry) {
+    public Lift( LinearOpMode opmode, HardwareMap hardwareMap, Telemetry telemetry) {
+        this.opMode = opmode;
         leftSlide = hardwareMap.get(DcMotorEx.class, "leftSlide");
         rightSlide = hardwareMap.get(DcMotorEx.class, "rightSlide");
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -30,7 +33,7 @@ public class Lift {
         height = height - MINIMUM_HEIGHT;
 
         int currentPos = (int) Math.round((leftSlide.getCurrentPosition()*CIRCUMFERENCE)/(ENCODER_CPR*GEAR_RATIO));
-        telemetry.addData("currentHeight",currentPos);
+        telemetry.addData("currentHeight",currentPos*Math.sin(Math.toRadians(LIFT_ANGLE)) + MINIMUM_HEIGHT);
 
         int distance = (int) (height * 1/Math.sin(Math.toRadians(LIFT_ANGLE)));
         distance = distance - currentPos;
@@ -53,12 +56,29 @@ public class Lift {
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setPower(POWER);
         leftSlide.setPower(POWER);
-        while(leftSlide.isBusy() && rightSlide.isBusy()) {}
+        while(opMode.opModeIsActive() && leftSlide.isBusy() && rightSlide.isBusy()) {}
         telemetry.addData("finished", "True");
         telemetry.addData("RPosF", rightSlide.getCurrentPosition());
         telemetry.addData("LPosF", leftSlide.getCurrentPosition());
         telemetry.update();
         rightSlide.setPower(STATIC_POWER);
         leftSlide.setPower(STATIC_POWER);
+    }
+
+    public int getHeight() {
+        int currentPos = (int) Math.round(((leftSlide.getCurrentPosition()*CIRCUMFERENCE)/(ENCODER_CPR*GEAR_RATIO)) * Math.sin(Math.toRadians(LIFT_ANGLE))) + MINIMUM_HEIGHT;
+        telemetry.addData("LiftHeight",currentPos);
+        return currentPos;
+    }
+
+    public void depositCone(int height, Angler angler) {
+
+        goToHeight(height);
+        angler.slowAngle(HORIZ_ANGLE);
+        double startWait = opMode.getRuntime();
+        while (opMode.getRuntime() < startWait + PAUSE_TIME) {
+        }
+        angler.slowAngle(SAFE_ANGLE);
+        goToHeight(MINIMUM_HEIGHT);
     }
 }

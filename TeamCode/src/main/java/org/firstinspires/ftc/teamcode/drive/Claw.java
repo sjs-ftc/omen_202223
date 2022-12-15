@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -10,17 +11,30 @@ public class Claw {
 
     Servo clawServo;
     public static double servoPosition = CLOSED_POS;
+    LinearOpMode opMode;
 
-    public Claw(HardwareMap hardwareMap) {
+    public Claw( LinearOpMode opMode, HardwareMap hardwareMap){
+        this.opMode = opMode;
         clawServo = hardwareMap.servo.get("claw");
+        closeClaw();
     }
 
-    public void openClaw() throws InterruptedException {
+    public void openClaw() {
         servoPosition = OPEN_POS;
         clawServo.setPosition(servoPosition);
     }
 
-    public void closeClaw() throws InterruptedException {
+    public void collect() {
+        servoPosition = COLLECT;
+        clawServo.setPosition(servoPosition);
+    }
+
+    public void dropCone() {
+        servoPosition = DROP_OPEN;
+        clawServo.setPosition(servoPosition);
+    }
+
+    public void closeClaw() {
         servoPosition = CLOSED_POS;
         clawServo.setPosition(servoPosition);
     }
