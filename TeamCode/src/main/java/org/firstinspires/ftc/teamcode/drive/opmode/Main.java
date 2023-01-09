@@ -18,11 +18,6 @@ import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 @TeleOp(group = "drive")
 public class Main extends LinearOpMode {
 
-
-    private Gamepad lastGamepad1 = gamepad1;
-    private Gamepad lastGamepad2 = gamepad2;
-    private boolean clawPos = false;
-
     private void dropCone(Lift lift, Angler angler, Claw claw) {
         claw.dropCone();
         double startWait = getRuntime();
@@ -100,21 +95,6 @@ public class Main extends LinearOpMode {
 
     }
 
-        public void manageClaw(Claw claw) {
-            if (gamepad1.options && !lastGamepad1.options) {
-                if (clawPos) {
-                    claw.closeClaw();
-                    clawPos = false;
-                }
-                else {
-                    claw.openClaw();
-                    clawPos = true;
-                }
-                Log.d("Claw State", "A pressed: ");
-                claw.closeClaw();
-                clawPos = false;
-            }
-        }
 
     private void drive(SampleMecanumDrive drive, Gamepad gamepad1) {
         drive.setWeightedDrivePower(
@@ -139,11 +119,10 @@ public class Main extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            manageClaw(claw);
             moveArm(lift, angler, claw);
             drive(drive, gamepad1);
 
-            lastGamepad1 = gamepad1;
+
             drive.update();
         }
 

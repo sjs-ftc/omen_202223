@@ -33,7 +33,7 @@ public class LiftTest extends LinearOpMode {
         angler.setAngle(.75);
         waitForStart();
 
-        lift.depositCone(HIGH_JUNCTION, angler);
+        //lift.depositCone(HIGH_JUNCTION, angler);
         slowAngle(HORIZ_ANGLE, angler);
 
         double startWait = getRuntime();

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.drive;
 
 import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.HIGH_JUNCTION;
 import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.HORIZ_ANGLE;
@@ -11,11 +11,9 @@ import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.TICK_ERROR;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.Angler;
-import org.firstinspires.ftc.teamcode.drive.Claw;
-import org.firstinspires.ftc.teamcode.drive.Lift;
-
 public class AutonomousActions {
+
+
 
     private LinearOpMode opmode;
 
@@ -25,7 +23,7 @@ public class AutonomousActions {
         while (this.opmode.getRuntime() < startWait + PAUSE_TIME) {
         }
         claw.closeClaw();
-        angler.slowAngle(SAFE_ANGLE);
+        angler.setAngle(SAFE_ANGLE);
         lift.goToHeight(MINIMUM_HEIGHT);
         while (this.opmode.opModeIsActive() && !(lift.getHeight() >= (MINIMUM_HEIGHT - TICK_ERROR) && lift.getHeight() <= (MINIMUM_HEIGHT + TICK_ERROR))) {
             lift.goToHeight(MINIMUM_HEIGHT);
@@ -45,7 +43,11 @@ public class AutonomousActions {
             lift.goToHeight(HIGH_JUNCTION);
         }
         angler.slowAngle(HORIZ_ANGLE);
+        double startWait = this.opmode.getRuntime();
+        while (this.opmode.getRuntime() < startWait + PAUSE_TIME) {
+        }
         dropCone(lift,angler,claw);
+
     }
 
     public void depositMid(Lift lift, Angler angler, Claw claw){
@@ -56,17 +58,17 @@ public class AutonomousActions {
             lift.goToHeight(HIGH_JUNCTION);
         }
         angler.slowAngle(HORIZ_ANGLE);
+
         dropCone(lift,angler,claw);
     }
 
     public void depositHigh(Lift lift, Angler angler, Claw claw) {
         claw.closeClaw();
-        angler.slowAngle(SAFE_ANGLE);
+        angler.setAngle(HORIZ_ANGLE);
         lift.goToHeight(HIGH_JUNCTION);
         while (this.opmode.opModeIsActive() && !(lift.getHeight() >= (HIGH_JUNCTION - TICK_ERROR) && lift.getHeight() <= (HIGH_JUNCTION + TICK_ERROR))) {
             lift.goToHeight(HIGH_JUNCTION);
         }
-        angler.slowAngle(HORIZ_ANGLE);
         dropCone(lift,angler,claw);
     }
 

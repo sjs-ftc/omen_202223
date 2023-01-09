@@ -25,15 +25,14 @@ public class AngleTest extends LinearOpMode {
         Angler angler = new Angler(this, hardwareMap);
         Claw claw = new Claw(this, hardwareMap);
 
-        angler.setAngle(GROUND_ANGLE);
+        angler.setAngle(HORIZ_ANGLE);
         claw.collect();
 
         waitForStart();
 
         int i = 0;
         while (!isStopRequested()) {
-            claw.dropCone();
-
+            angler.setAngle(GROUND_ANGLE);
 
             //angler.setAngle(1.0);
 

@@ -13,14 +13,15 @@ public final class GeneralConstants {
     public static int GROUND_JUNCTION = 250;
     public static double PAUSE_TIME = 1.0;
     public static double COLLECT_PAUSE = 0.6;
-    public static double TICK_ERROR = 20;
+    public static double DROP_PAUSE = 0.6;
+    public static double TICK_ERROR = 5;
 
 
 
 
     //Lift
     public static int MINIMUM_HEIGHT = 210; // also in Main
-    public static double ENCODER_CPR = 537.7;
+    public static double ENCODER_CPR = 384.5;
     public static double POWER = 1.0;
     public static double GEAR_RATIO = 1.0;
     public static double CIRCUMFERENCE = 112;
@@ -34,16 +35,18 @@ public final class GeneralConstants {
 
 
     //Angler
-    public static double HORIZ_ANGLE = .26;
-    public static double MAX_ANGLE = 1;
-    public static double SAFE_ANGLE = .75;
-    public static double GROUND_ANGLE = .915;
+    public static double HORIZ_ANGLE = .6;
+    public static double MAX_ANGLE = .8;
+    public static double MIN_ANGLE = .2;
+    public static double SAFE_ANGLE = .02;
+    public static double GROUND_ANGLE = .0;
 
-        //Autonomous
-        public static double STACK_2 = .89;
-        public static double STACK_3 = .87;
-        public static double STACK_4 = .85;
-        public static double STACK_5 = .83;
+
+    //Autonomous
+        public static double STACK_2 = .01;
+        public static double STACK_3 = .02;
+        public static double STACK_4 = .03;
+        public static double STACK_5 = .04;
 
 
     //Claw
@@ -51,5 +54,6 @@ public final class GeneralConstants {
     public static double COLLECT = 0.15;
     public static double DROP_OPEN = 0.12;
     public static double OPEN_POS = .4;
+
 
 }

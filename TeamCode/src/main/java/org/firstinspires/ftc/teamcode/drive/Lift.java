@@ -14,6 +14,8 @@ public class Lift {
     DcMotorEx leftSlide, rightSlide;
     Telemetry telemetry;
     LinearOpMode opMode;
+    int targetHeight;
+    public boolean stalling;
 
     public Lift( LinearOpMode opmode, HardwareMap hardwareMap, Telemetry telemetry) {
         this.opMode = opmode;
@@ -24,6 +26,38 @@ public class Lift {
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.telemetry = telemetry;
+        targetHeight = MINIMUM_HEIGHT;
+    }
+
+    public void update() {
+        if (!(getHeight() >= (targetHeight - TICK_ERROR) && getHeight() <= (targetHeight + TICK_ERROR))) {
+            rightSlide.setPower(POWER);
+            leftSlide.setPower(POWER);
+            stalling = false;
+        }
+        else {
+            stall();
+            stalling = true;
+        }
+    }
+
+    public void setTargetHeight(int height) {
+        targetHeight = height;
+        height = height - MINIMUM_HEIGHT;
+
+        int currentPos = (int) Math.round((leftSlide.getCurrentPosition()*CIRCUMFERENCE)/(ENCODER_CPR*GEAR_RATIO));
+
+        int distance = (int) (height * 1/Math.sin(Math.toRadians(LIFT_ANGLE)));
+        distance = distance - currentPos;
+
+        double ROTATIONS = distance / CIRCUMFERENCE;
+        double COUNTS = Math.round(ENCODER_CPR * ROTATIONS * GEAR_RATIO);
+        int length = (int) COUNTS;
+
+        rightSlide.setTargetPosition(rightSlide.getCurrentPosition() - length);
+        leftSlide.setTargetPosition(leftSlide.getCurrentPosition() + length);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     /**
@@ -33,34 +67,28 @@ public class Lift {
         height = height - MINIMUM_HEIGHT;
 
         int currentPos = (int) Math.round((leftSlide.getCurrentPosition()*CIRCUMFERENCE)/(ENCODER_CPR*GEAR_RATIO));
-        telemetry.addData("currentHeight",currentPos*Math.sin(Math.toRadians(LIFT_ANGLE)) + MINIMUM_HEIGHT);
 
         int distance = (int) (height * 1/Math.sin(Math.toRadians(LIFT_ANGLE)));
         distance = distance - currentPos;
-
-        telemetry.addData("DISTANCE", distance);
 
         double ROTATIONS = distance / CIRCUMFERENCE;
         double COUNTS = Math.round(ENCODER_CPR * ROTATIONS * GEAR_RATIO);
         int length = (int) COUNTS;
 
-        telemetry.addData("LPosI", leftSlide.getCurrentPosition());
-        telemetry.addData("Counts", COUNTS);
-        telemetry.addData("length",length);
-
-        telemetry.addData("RPosI", rightSlide.getCurrentPosition());
-        telemetry.addData("LPosI", leftSlide.getCurrentPosition());
         rightSlide.setTargetPosition(rightSlide.getCurrentPosition() - length);
         leftSlide.setTargetPosition(leftSlide.getCurrentPosition() + length);
-        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         rightSlide.setPower(POWER);
         leftSlide.setPower(POWER);
         while(opMode.opModeIsActive() && leftSlide.isBusy() && rightSlide.isBusy()) {}
-        telemetry.addData("finished", "True");
-        telemetry.addData("RPosF", rightSlide.getCurrentPosition());
-        telemetry.addData("LPosF", leftSlide.getCurrentPosition());
-        telemetry.update();
+
+        rightSlide.setPower(STATIC_POWER);
+        leftSlide.setPower(STATIC_POWER);
+    }
+
+    public void stall() {
         rightSlide.setPower(STATIC_POWER);
         leftSlide.setPower(STATIC_POWER);
     }
@@ -71,14 +99,4 @@ public class Lift {
         return currentPos;
     }
 
-    public void depositCone(int height, Angler angler) {
-
-        goToHeight(height);
-        angler.slowAngle(HORIZ_ANGLE);
-        double startWait = opMode.getRuntime();
-        while (opMode.getRuntime() < startWait + PAUSE_TIME) {
-        }
-        angler.slowAngle(SAFE_ANGLE);
-        goToHeight(MINIMUM_HEIGHT);
-    }
 }

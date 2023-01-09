@@ -11,20 +11,38 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(600);
 
+        Pose2d startPose = new Pose2d(-36, -64, 3*Math.PI/2);
+
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(36, 60, Math.PI/2))
-                                .back(48)
-                                .turn(Math.toRadians(-90))
-                                .forward(24)
-                                .waitSeconds(1)
-                                .back(12)
-                                .turn(Math.toRadians(30))
-                                .waitSeconds(1)
-                                .turn(Math.toRadians(-30))
-                                .forward(12)
+                        drive.trajectorySequenceBuilder(startPose)
+                                .lineToLinearHeading(new Pose2d(-36,-12,Math.PI))
+                                .lineToLinearHeading(new Pose2d(-51,-12,Math.toRadians(180+20)))
+                                .waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-60,-12,Math.PI))
+                                .waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-51,-12,Math.toRadians(180+20)))
+                                .waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-60,-12,Math.PI))
+                                .waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-51,-12,Math.toRadians(180+20)))
+                                .waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-60,-12,Math.PI)).waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-51,-12,Math.toRadians(180+20)))
+                                .waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-60,-12,Math.PI))
+                                .waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-51,-12,Math.toRadians(180+20)))
+                                .waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-60,-12,Math.PI))
+                                .waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-51,-12,Math.toRadians(180+20)))
+                                .waitSeconds(.5)
+                                .lineToLinearHeading(new Pose2d(-12,-12,Math.PI))
+
+
                                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)

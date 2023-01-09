@@ -25,11 +25,8 @@ public class Angler {
      * .2 is horizontal
      */
     public void setAngle(double angle) {
-        if (angle < HORIZ_ANGLE) {
-            angle = HORIZ_ANGLE;
-        }
-        leftAngle.setPosition(MAX_ANGLE - angle);
-        rightAngle.setPosition(angle);
+        leftAngle.setPosition(MIN_ANGLE - angle);
+        rightAngle.setPosition(MAX_ANGLE + angle);
     }
 
     public void slowAngle(double angle) {
@@ -37,7 +34,11 @@ public class Angler {
         double tick = (angle - currentAngle)/10.0;
 
         for (int u = 0; u < 10; u++) {
-            setAngle(currentAngle + tick);
+            if (angle < HORIZ_ANGLE) {
+                angle = HORIZ_ANGLE;
+            }
+            leftAngle.setPosition(MAX_ANGLE - (currentAngle + tick));
+            rightAngle.setPosition((currentAngle + tick));
             currentAngle = getAngle();
             double startWait = opMode.getRuntime();
             while (opMode.getRuntime() < startWait + .1) {
