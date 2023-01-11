@@ -35,11 +35,11 @@ public final class GeneralConstants {
 
 
     //Angler
-    public static double HORIZ_ANGLE = .6;
-    public static double MAX_ANGLE = .8;
+    public static double HORIZ_ANGLE = .25;
+    public static double MAX_ANGLE = 1;
     public static double MIN_ANGLE = .2;
-    public static double SAFE_ANGLE = .02;
-    public static double GROUND_ANGLE = .0;
+    public static double SAFE_ANGLE = .65;
+    public static double GROUND_ANGLE = .92;
 
 
     //Autonomous

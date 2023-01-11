@@ -34,7 +34,7 @@ public class Main extends LinearOpMode {
 
     public void moveArm(Lift lift, Angler angler, Claw claw) {
         int height;
-        if (gamepad1.y) {
+        if (gamepad2.y) {
             claw.closeClaw();
             angler.slowAngle(SAFE_ANGLE);
             lift.goToHeight(HIGH_JUNCTION);
@@ -45,7 +45,7 @@ public class Main extends LinearOpMode {
             return;
 
         }
-        if (gamepad1.x) {
+        if (gamepad2.x) {
             claw.closeClaw();
             angler.slowAngle(SAFE_ANGLE);
             lift.goToHeight(LOW_JUNCTION);
@@ -55,7 +55,7 @@ public class Main extends LinearOpMode {
             angler.slowAngle(HORIZ_ANGLE);
             return;
         }
-        if (gamepad1.b) {
+        if (gamepad2.b) {
             claw.closeClaw();
             angler.slowAngle(SAFE_ANGLE);
             lift.goToHeight(MID_JUNCTION);
@@ -65,7 +65,7 @@ public class Main extends LinearOpMode {
             angler.slowAngle(HORIZ_ANGLE);
             return;
         }
-        if (gamepad1.a) {
+        if (gamepad2.a) {
             claw.closeClaw();
             angler.slowAngle(SAFE_ANGLE);
             lift.goToHeight(GROUND_JUNCTION);
@@ -76,11 +76,11 @@ public class Main extends LinearOpMode {
             return;
         }
 
-        if (gamepad1.dpad_down) {
+        if (gamepad2.dpad_down) {
             dropCone(lift, angler, claw);
         }
 
-        if (gamepad1.dpad_left) {
+        if (gamepad2.dpad_left) {
             angler.setAngle(GROUND_ANGLE);
             double startWait = getRuntime();
             while (getRuntime() < startWait + COLLECT_PAUSE) {
@@ -88,20 +88,19 @@ public class Main extends LinearOpMode {
             claw.collect();
         }
 
-        if (gamepad1.dpad_up) {
+        if (gamepad2.dpad_up) {
             claw.closeClaw();
             angler.slowAngle(SAFE_ANGLE);
         }
 
     }
 
-
-    private void drive(SampleMecanumDrive drive, Gamepad gamepad1) {
+    private void drive(SampleMecanumDrive drive, Gamepad gamepad) {
         drive.setWeightedDrivePower(
                 new Pose2d(
-                        -Math.pow(gamepad1.left_stick_y,3) * DRIVE_POWER,
-                        -Math.pow(gamepad1.left_stick_x,3) * DRIVE_POWER,
-                        -Math.pow(gamepad1.right_stick_x,3) * DRIVE_POWER
+                        -Math.pow(gamepad.left_stick_y,3) * DRIVE_POWER,
+                        -Math.pow(gamepad.left_stick_x,3) * DRIVE_POWER,
+                        -Math.pow(gamepad.right_stick_x,3) * DRIVE_POWER
                 )
         );
     }

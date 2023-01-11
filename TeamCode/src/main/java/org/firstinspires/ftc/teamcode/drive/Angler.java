@@ -25,8 +25,11 @@ public class Angler {
      * .2 is horizontal
      */
     public void setAngle(double angle) {
-        leftAngle.setPosition(MIN_ANGLE - angle);
-        rightAngle.setPosition(MAX_ANGLE + angle);
+        if (angle < MIN_ANGLE) {
+            angle = MIN_ANGLE;
+        }
+        leftAngle.setPosition(angle);
+        rightAngle.setPosition(MAX_ANGLE - angle);
     }
 
     public void slowAngle(double angle) {
