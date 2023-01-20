@@ -7,18 +7,24 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drive.Angler;
 import org.firstinspires.ftc.teamcode.drive.Claw;
+import org.firstinspires.ftc.teamcode.drive.ClawDistance;
 import org.firstinspires.ftc.teamcode.drive.Distances;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.SignalSleeveCamera;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-@Autonomous(name = "Auto: Red Right No Camera", group = "Game No Camera")
-public class FSMRedRightAuto extends LinearOpMode {
+@Autonomous(name = "Auto: Touch Sensor Test", group = "Test")
+public class RRAutoTouchSensorTest extends LinearOpMode {
 
     public enum LiftState {
         LIFT_START,
@@ -47,22 +53,27 @@ public class FSMRedRightAuto extends LinearOpMode {
         LIFT_END
     }
 
-    Pose2d startPose = RRstartPose;
+    Pose2d startPose = BRstartPose;
     Pose2d stackPose = RRstackPose;
-    Pose2d dropPose = RRdropPose;
-    Pose2d readyPose = RRreadyPose;
-    Pose2d parkingPose1 = RRparkingPose1;
-    Pose2d parkingPose2 = RRparkingPose2;
-    Pose2d parkingPose3 = RRparkingPose3;
-    Pose2d endPose = new Pose2d(10,-12,0);
+    Pose2d dropPose = BRdropPose;
+    Pose2d readyPose = BRreadyPose;
+    Pose2d parkingPose1 = BRparkingPose1;
+    Pose2d parkingPose2 = BRparkingPose2;
+    Pose2d parkingPose3 = BRparkingPose3;
+
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
+        ElapsedTime timer = new ElapsedTime();
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Claw claw = new Claw(this, hardwareMap);
         Angler angler = new Angler(this, hardwareMap);
         Lift lift = new Lift(this, hardwareMap, telemetry);
-        Distances distances = new Distances(this,hardwareMap);
+        ClawDistance clawDistance = new ClawDistance(this,hardwareMap);
+        SignalSleeveCamera camera = new SignalSleeveCamera(this,hardwareMap,telemetry);
 
         AtomicReference<LiftState> liftState = new AtomicReference<>(LiftState.LIFT_START);
         liftState.set(LiftState.LIFT_START);
@@ -81,11 +92,13 @@ public class FSMRedRightAuto extends LinearOpMode {
 
         angler.setAngle(SAFE_ANGLE);
         claw.closeClaw();
+        int signalNumber = 2;
 
         waitForStart();
 
-        drive.setPoseEstimate(startPose);
+        signalNumber = camera.search();
 
+        drive.setPoseEstimate(startPose);
         boolean firstState = true;
 
         while (!isStopRequested()) {
@@ -111,10 +124,10 @@ public class FSMRedRightAuto extends LinearOpMode {
                     break;
                 }
                 case LIFT_DROP1: {
-                    angler.setAngle(STACK_5);
+                    angler.setAngle(AUTO_STACK_5);
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
-                        lift.setTargetHeight(MINIMUM_HEIGHT);
+                        lift.setTargetHeight(AUTO_COLLECT_HEIGHT_5);
                         liftState.set(LiftState.LIFT_COLLECTWAIT1);
                     }
                     break;
@@ -126,6 +139,9 @@ public class FSMRedRightAuto extends LinearOpMode {
                                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                 .waitSeconds(COLLECT_PAUSE)
+                                .addTemporalMarker(()->{
+                                    liftState.set(LiftState.LIFT_COLLECT1);
+                                })
                                 .build();
 
                         drive.followTrajectorySequenceAsync(trajectorySequence);
@@ -133,33 +149,43 @@ public class FSMRedRightAuto extends LinearOpMode {
                     }
                     else if (lift.getHeight() < MID_JUNCTION && lift.getHeight() > LOW_JUNCTION) {
                         claw.collect();
-                    }
-                    if (lift.getHeight() < MINIMUM_HEIGHT + TICK_ERROR) {
-                        liftState.set(LiftState.LIFT_COLLECT1);
                         liftTimer.reset();
                         firstState = true;
-                    }
-                    if (distances.getDistances()[0] <= 8 || distances.getDistances()[1] <= 8) {
-                        drive.setPoseEstimate(stackPose);
                     }
                     break;
                 }
                 case LIFT_COLLECT1: {
-                    claw.closeClaw();
+                    if (!clawDistance.coneDetected()) {
+                        drive.setWeightedDrivePower(
+                                new Pose2d(
+                                        .5,
+                                        0,
+                                        0
+                                ));
+                    }
+                    else if (clawDistance.coneDetected()) {
+                        drive.setWeightedDrivePower(
+                                new Pose2d(
+                                        0,
+                                        0,
+                                        0
+                                ));
+                        claw.closeClaw();
+                    }
                     if (firstState && liftTimer.seconds() >= DROP_PAUSE) {
-                            trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                    .waitSeconds(.3)
-                                    .addTemporalMarker(() -> {
-                                        liftState.set(LiftState.LIFT_HIGH2);
-                                    })
-                                    .lineToLinearHeading(dropPose,
-                                            SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                                    .build();
+                        trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .waitSeconds(.3)
+                                .addTemporalMarker(() -> {
+                                    liftState.set(LiftState.LIFT_HIGH2);
+                                })
+                                .lineToLinearHeading(dropPose,
+                                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                                .build();
 
-                            drive.followTrajectorySequenceAsync(trajectorySequence);
-                            firstState = false;
-                        }
+                        drive.followTrajectorySequenceAsync(trajectorySequence);
+                        firstState = false;
+                    }
                     break;
                 }
                 case LIFT_HIGH2: {
@@ -174,10 +200,10 @@ public class FSMRedRightAuto extends LinearOpMode {
                     break;
                 }
                 case LIFT_DROP2: {
-                    angler.setAngle(STACK_4);
+                    angler.setAngle(AUTO_STACK_4);
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
-                        lift.setTargetHeight(MINIMUM_HEIGHT);
+                        lift.setTargetHeight(AUTO_COLLECT_HEIGHT_4);
                         liftState.set(LiftState.LIFT_COLLECTWAIT2);
                     }
                     break;
@@ -197,13 +223,10 @@ public class FSMRedRightAuto extends LinearOpMode {
                     else if (lift.getHeight() < MID_JUNCTION && lift.getHeight() > LOW_JUNCTION) {
                         claw.collect();
                     }
-                    if (lift.getHeight() < MINIMUM_HEIGHT + TICK_ERROR) {
+                    if (lift.getHeight() < lift.getTargetHeight() + TICK_ERROR) {
                         liftState.set(LiftState.LIFT_COLLECT2);
                         liftTimer.reset();
                         firstState = true;
-                    }
-                    if (distances.getDistances()[0] <= 8 || distances.getDistances()[1] <= 8) {
-                        drive.setPoseEstimate(stackPose);
                     }
                     break;
                 }
@@ -237,10 +260,10 @@ public class FSMRedRightAuto extends LinearOpMode {
                     break;
                 }
                 case LIFT_DROP3: {
-                    angler.setAngle(STACK_3);
+                    angler.setAngle(AUTO_STACK_3);
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
-                        lift.setTargetHeight(MINIMUM_HEIGHT);
+                        lift.setTargetHeight(AUTO_COLLECT_HEIGHT_3);
                         liftState.set(LiftState.LIFT_COLLECTWAIT3);
                     }
                     break;
@@ -260,13 +283,10 @@ public class FSMRedRightAuto extends LinearOpMode {
                     else if (lift.getHeight() < MID_JUNCTION && lift.getHeight() > LOW_JUNCTION) {
                         claw.collect();
                     }
-                    if (lift.getHeight() < MINIMUM_HEIGHT + TICK_ERROR) {
+                    if (lift.getHeight() < lift.getTargetHeight() + TICK_ERROR) {
                         liftState.set(LiftState.LIFT_COLLECT3);
                         liftTimer.reset();
                         firstState = true;
-                    }
-                    if (distances.getDistances()[0] <= 8 || distances.getDistances()[1] <= 8) {
-                        drive.setPoseEstimate(stackPose);
                     }
                     break;
                 }
@@ -300,11 +320,12 @@ public class FSMRedRightAuto extends LinearOpMode {
                     break;
                 }
                 case LIFT_DROP4: {
-                    angler.setAngle(STACK_2);
+                    angler.setAngle(AUTO_STACK_2);
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
-                        lift.setTargetHeight(MINIMUM_HEIGHT);
+                        lift.setTargetHeight(AUTO_COLLECT_HEIGHT_2);
                         liftState.set(LiftState.LIFT_END);
+                        firstState = true;
                     }
                     break;
                 }
@@ -364,7 +385,7 @@ public class FSMRedRightAuto extends LinearOpMode {
                     break;
                 }
                 case LIFT_DROP5: {
-                    angler.setAngle(GROUND_ANGLE);
+                    angler.setAngle(AUTO_GROUND);
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
                         lift.setTargetHeight(MINIMUM_HEIGHT);
@@ -437,15 +458,50 @@ public class FSMRedRightAuto extends LinearOpMode {
                 }
                  */
                 case LIFT_END: {
-                    trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(endPose,
-                                    SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                            .build();
+                    switch (signalNumber) {
+                        case 0: {
+                            trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .lineToLinearHeading(parkingPose2,
+                                            SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                                    .build();
+                            break;
+                        }
+                        case 1: {
+                            trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .lineToLinearHeading(parkingPose1,
+                                            SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                                    .build();
+                            break;
+                        }
+                        case 2: {
+                            trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .lineToLinearHeading(parkingPose2,
+                                            SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                                    .build();
+                            break;
+                        }
+                        case 3: {
+                            trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                    .lineToLinearHeading(parkingPose3,
+                                            SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                            SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                                    .build();
+                            break;
+                        }
 
+                    }
+
+                    if (firstState) {
+                        drive.followTrajectorySequenceAsync(trajectorySequence);
+                        firstState = false;
+                    }
+                    lift.setTargetHeight(MINIMUM_HEIGHT);
                     angler.setAngle(GROUND_ANGLE);
                     claw.closeClaw();
-                    drive.followTrajectorySequenceAsync(trajectorySequence);
+
                     break;
                 }
             }
@@ -453,4 +509,5 @@ public class FSMRedRightAuto extends LinearOpMode {
             drive.update();
         }
     }
+
 }

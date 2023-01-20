@@ -17,7 +17,11 @@ public class Lift {
     int targetHeight;
     public boolean stalling;
 
-    public Lift( LinearOpMode opmode, HardwareMap hardwareMap, Telemetry telemetry) {
+    public int getTargetHeight() {
+        return targetHeight;
+    }
+
+    public Lift(LinearOpMode opmode, HardwareMap hardwareMap, Telemetry telemetry) {
         this.opMode = opmode;
         leftSlide = hardwareMap.get(DcMotorEx.class, "leftSlide");
         rightSlide = hardwareMap.get(DcMotorEx.class, "rightSlide");
@@ -29,6 +33,11 @@ public class Lift {
         targetHeight = MINIMUM_HEIGHT;
     }
 
+    public void setZero() {
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
     public void update() {
         if (!(getHeight() >= (targetHeight - TICK_ERROR) && getHeight() <= (targetHeight + TICK_ERROR))) {
             rightSlide.setPower(POWER);
@@ -38,6 +47,11 @@ public class Lift {
         else {
             stall();
             stalling = true;
+        }
+        if (targetHeight <= MINIMUM_HEIGHT + TICK_ERROR && getHeight() <= MINIMUM_HEIGHT + TICK_ERROR) {
+            rightSlide.setPower(0);
+            leftSlide.setPower(0);
+            setZero();
         }
     }
 
