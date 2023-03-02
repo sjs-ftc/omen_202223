@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.Angler;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.drive.Lift;
 
 import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 
+@Disabled
 @Autonomous()
 public class LiftTest extends LinearOpMode {
 

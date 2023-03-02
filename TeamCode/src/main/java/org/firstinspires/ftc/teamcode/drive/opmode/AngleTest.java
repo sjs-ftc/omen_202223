@@ -3,12 +3,13 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.Angler;
 import org.firstinspires.ftc.teamcode.drive.Claw;
 import org.firstinspires.ftc.teamcode.drive.Lift;
-
+@Disabled
 @Autonomous()
 public class AngleTest extends LinearOpMode {
 
@@ -25,11 +26,10 @@ public class AngleTest extends LinearOpMode {
 
         int i = 0;
         while (!isStopRequested()) {
-            lift.setTargetHeight(AUTO_COLLECT_HEIGHT_1);
+            lift.setTargetHeight(250);
             angler.setAngle(AUTO_STACK_3);
-
+            claw.closeClaw();
             lift.update();
-
         }
     }
 }

@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.Angler;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.drive.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
+@Disabled
 @Autonomous
 public class MoveLiftMixTest extends LinearOpMode {
 

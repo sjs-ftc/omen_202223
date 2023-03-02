@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Disabled
 @Autonomous(name = "Auto: Blue Left Camera", group = "Game")
 public class CameraBlueLeftAuto extends LinearOpMode {
 

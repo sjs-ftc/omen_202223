@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Disabled
 @Autonomous(name = "Auto: Blue Right Camera", group = "Game")
 public class CameraBlueRightAuto extends LinearOpMode {
 
@@ -383,12 +385,11 @@ public class CameraBlueRightAuto extends LinearOpMode {
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
                         lift.setTargetHeight(MINIMUM_HEIGHT);
-                        liftState.set(LiftState.LIFT_END);
+                        liftState.set(LiftState.LIFT_COLLECTWAIT4);
                         firstState = true;
                     }
                     break;
                 }
-                /*
                 case LIFT_COLLECTWAIT4: {
                     if (lift.getHeight() < MID_JUNCTION && firstState) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
@@ -408,9 +409,6 @@ public class CameraBlueRightAuto extends LinearOpMode {
                         liftState.set(LiftState.LIFT_COLLECT4);
                         liftTimer.reset();
                         firstState = true;
-                    }
-                    if (distances.getDistances()[0] <= 8 || distances.getDistances()[1] <= 8) {
-                        drive.setPoseEstimate(stackPose);
                     }
                     break;
                 }
@@ -448,10 +446,12 @@ public class CameraBlueRightAuto extends LinearOpMode {
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
                         lift.setTargetHeight(MINIMUM_HEIGHT);
-                        liftState.set(LiftState.LIFT_COLLECTWAIT5);
+                        liftState.set(LiftState.LIFT_END);
+                        firstState = true;
                     }
                     break;
                 }
+                /*
                 case LIFT_COLLECTWAIT5: {
                     if (lift.getHeight() < MID_JUNCTION && firstState) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())

@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,17 +15,23 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drive.Angler;
+import org.firstinspires.ftc.teamcode.drive.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.drive.Claw;
-import org.firstinspires.ftc.teamcode.drive.Distances;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.openftc.apriltag.AprilTagDetection;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Autonomous(name = "Auto: Red Right Camera", group = "Game")
+@Disabled
+@Autonomous(name = "Auto: Test Red Right", group = "Game")
 public class CameraRedRightAuto extends LinearOpMode {
 
     public enum LiftState {
@@ -54,44 +61,63 @@ public class CameraRedRightAuto extends LinearOpMode {
         LIFT_END
     }
 
-    Pose2d startPose = RRstartPose;
-    Pose2d stackPose = RRstackPose;
-    Pose2d dropPose = RRdropPose;
-    Pose2d readyPose = RRreadyPose;
-    Pose2d parkingPose1 = RRparkingPose1;
-    Pose2d parkingPose2 = RRparkingPose2;
-    Pose2d parkingPose3 = RRparkingPose3;
+    OpenCvCamera camera;
+    AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-    private static final String TFOD_MODEL_ASSET = "PowerPlay.tflite";
+    static final double FEET_PER_METER = 3.28084;
 
-    private static final String[] LABELS = {
-            "1 Bolt",
-            "2 Bulb",
-            "3 Panel"
-    };
+    // Lens intrinsics
+    // UNITS ARE PIXELS
+    // NOTE: this calibration is for the C920 webcam at 800x448.
+    // You will need to do your own calibration for other configurations!
+    double fx = 578.272;
+    double fy = 578.272;
+    double cx = 402.145;
+    double cy = 221.506;
 
-    private static final String VUFORIA_KEY =
-            "AfdxXSz/////AAABmVzIu0NamEtKgZ//wS//1OUuq+bvE4nNlADPoxwJZN10SAVnsW0DzeR22RlyNXvW3ll3ZE3I2pS/vEdo/6h2pKMrEFbdPANhJyGKh8r4Tz2KNx6oH9BcREvgMFGUozEsne7JI3g9CG1BibmsjbOnGRWCn/QuD/iZJAEErz2weomPGMeWa1hC8zVsXzI22jAPYDXCEeFAVnG+FUF2lM34oVa7imVkVVxK9vWVilJ06qWNLTM7SoEbtysgBsV9LY0pMmN3bWnAtYQP+RhrqNdrLJVuV0JAo7JNPXvX5QSIa2goRlzEYVRhcNC6e5whK4KKJ1CBbkzlsDygWboYmywTg1nKTS/IaUEG9MhQ6/nfYXUR";
-    private VuforiaLocalizer vuforia;
-    private TFObjectDetector tfod;
+    // UNITS ARE METERS
+    double tagsize = TAG_SIZE;
 
+    int left = 7;
+    int middle = 8;
+    int right = 9;
+
+    AprilTagDetection tagOfInterest = null;
+
+
+    Pose2d startPose = BRstartPose;
+    Pose2d stackPose = BRstackPose;
+    Pose2d dropPose = BRdropPose;
+    Pose2d cone5Pose = BRcone5Pose;
+    Pose2d readyPose = BRreadyPose;
+    Pose2d parkingPose1 = BRparkingPose1;
+    Pose2d parkingPose2 = BRparkingPose2;
+    Pose2d parkingPose3 = BRparkingPose3;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initVuforia();
-        initTfod();
-        ElapsedTime timer = new ElapsedTime();
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
-        if (tfod != null) {
-            tfod.activate();
-            tfod.setZoom(1.0, 16.0/9.0);
-        }
+        camera.setPipeline(aprilTagDetectionPipeline);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(640,480, OpenCvCameraRotation.UPRIGHT);
+            }
+            @Override
+            public void onError(int errorCode) {}
+        });
+        telemetry.setMsTransmissionInterval(50);
+
+        telemetry.addData("Init","Hello");
+        telemetry.update();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Claw claw = new Claw(this, hardwareMap);
         Angler angler = new Angler(this, hardwareMap);
         Lift lift = new Lift(this, hardwareMap, telemetry);
-        Distances distances = new Distances(this,hardwareMap);
 
         AtomicReference<LiftState> liftState = new AtomicReference<>(LiftState.LIFT_START);
         liftState.set(LiftState.LIFT_START);
@@ -99,6 +125,9 @@ public class CameraRedRightAuto extends LinearOpMode {
 
 
         TrajectorySequence trajectorySequence = drive.trajectorySequenceBuilder(startPose)
+                .addTemporalMarker(() -> {
+                    angler.setAngle(SAFE_ANGLE);
+                })
                 .lineToLinearHeading(readyPose,
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -108,59 +137,52 @@ public class CameraRedRightAuto extends LinearOpMode {
                 .lineToLinearHeading(dropPose)
                 .build();
 
-        angler.setAngle(SAFE_ANGLE);
-        claw.closeClaw();
 
         int signalNumber = 2;
+        telemetry.addData("Init","Before Loop");
+        telemetry.update();
 
-        waitForStart();
-        timer.reset();
+        claw.closeClaw();
+        lift.setTargetHeight(SAFE_HEIGHT);
+        while (!isStarted() && !isStopRequested()) {
+            lift.update();
+            angler.setAngle(START_ANGLE);
 
-        if (opModeIsActive()) {
-            while (timer.seconds() < IMAGE_TIME) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+            telemetry.addData("Command","April Tags Running");
+            ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
-                        // step through the list of recognitions and display boundary info.
-                        int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
-                            i++;
+            if(currentDetections.size() != 0)
+            {
+                telemetry.addData("number of objects ",currentDetections.size());
+                boolean tagFound = false;
 
-                            // check label to see if the camera now sees a Duck         ** ADDED **
-                            if (recognition.getLabel().equals("1 Bolt")) {
-                                signalNumber = 1;
-                                telemetry.addData("Object Detected", "Parking 1");      //  ** ADDED **
-                                break;
-                            }
-                            else if (recognition.getLabel().equals("2 Bulb")) {
-                                signalNumber = 2;
-                                telemetry.addData("Object Detected", "Parking 2");      //  ** ADDED **
-                                break;
-                            }
-                            else if (recognition.getLabel().equals("3 Panel")) {
-                                signalNumber = 3;
-                                telemetry.addData("Object Detected", "Parking 3");      //  ** ADDED **
-                                break;
-                            }
-                            //  ** ADDED **
+                for(AprilTagDetection tag : currentDetections)
+                {
+                    if(tag.id == left || tag.id == middle || tag.id == right)
+                    {
+                        tagOfInterest = tag;
+                        if (tagOfInterest.id == left) {
+                            telemetry.addData("Tag: ","1");
+                            signalNumber = 1;
                         }
-                        telemetry.update();
+                        else if (tagOfInterest.id == middle) {
+                            signalNumber = 2;
+                            telemetry.addData("Tag: ","2");
+                        }
+                        else if (tagOfInterest.id == right) {
+                            signalNumber = 3;
+                            telemetry.addData("Tag: ","3");
+                        }
+                        tagFound = true;
+                        break;
                     }
                 }
             }
+            telemetry.update();
+            sleep(20);
         }
-
-        if (tfod != null) {
-            tfod.shutdown();
+        if (tagOfInterest == null) {
+            signalNumber = 1;
         }
 
         drive.setPoseEstimate(startPose);
@@ -374,12 +396,11 @@ public class CameraRedRightAuto extends LinearOpMode {
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
                         lift.setTargetHeight(MINIMUM_HEIGHT);
-                        liftState.set(LiftState.LIFT_END);
+                        liftState.set(LiftState.LIFT_COLLECTWAIT4);
                         firstState = true;
                     }
                     break;
                 }
-                /*
                 case LIFT_COLLECTWAIT4: {
                     if (lift.getHeight() < MID_JUNCTION && firstState) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
@@ -399,9 +420,6 @@ public class CameraRedRightAuto extends LinearOpMode {
                         liftState.set(LiftState.LIFT_COLLECT4);
                         liftTimer.reset();
                         firstState = true;
-                    }
-                    if (distances.getDistances()[0] <= 8 || distances.getDistances()[1] <= 8) {
-                        drive.setPoseEstimate(stackPose);
                     }
                     break;
                 }
@@ -440,13 +458,14 @@ public class CameraRedRightAuto extends LinearOpMode {
                         claw.closeClaw();
                         lift.setTargetHeight(MINIMUM_HEIGHT);
                         liftState.set(LiftState.LIFT_COLLECTWAIT5);
+                        firstState = true;
                     }
                     break;
                 }
                 case LIFT_COLLECTWAIT5: {
                     if (lift.getHeight() < MID_JUNCTION && firstState) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .lineToLinearHeading(stackPose,
+                                .lineToLinearHeading(cone5Pose,
                                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                 .waitSeconds(COLLECT_PAUSE)
@@ -462,9 +481,6 @@ public class CameraRedRightAuto extends LinearOpMode {
                         liftState.set(LiftState.LIFT_COLLECT5);
                         liftTimer.reset();
                         firstState = true;
-                    }
-                    if (distances.getDistances()[0] <= 8 || distances.getDistances()[1] <= 8) {
-                        drive.setPoseEstimate(stackPose);
                     }
                     break;
                 }
@@ -503,10 +519,10 @@ public class CameraRedRightAuto extends LinearOpMode {
                         claw.closeClaw();
                         lift.setTargetHeight(MINIMUM_HEIGHT);
                         liftState.set(LiftState.LIFT_END);
+                        firstState = true;
                     }
                     break;
                 }
-                 */
                 case LIFT_END: {
                     switch (signalNumber) {
                         case 0: {
@@ -543,6 +559,7 @@ public class CameraRedRightAuto extends LinearOpMode {
                         }
 
                     }
+
                     if (firstState) {
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         firstState = false;
@@ -558,34 +575,4 @@ public class CameraRedRightAuto extends LinearOpMode {
         }
     }
 
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
-
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = MIN_CONFIDENCE;
-        tfodParameters.isModelTensorFlow2 = true;
-        tfodParameters.inputSize = 300;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-
-        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
-        // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-        // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
-    }
 }

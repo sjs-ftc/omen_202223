@@ -48,7 +48,7 @@ public class Lift {
             stall();
             stalling = true;
         }
-        if (targetHeight <= MINIMUM_HEIGHT + TICK_ERROR && getHeight() <= MINIMUM_HEIGHT + TICK_ERROR) {
+        if (targetHeight <= MINIMUM_HEIGHT && getHeight() <= MINIMUM_HEIGHT + TICK_ERROR) {
             rightSlide.setPower(0);
             leftSlide.setPower(0);
             setZero();

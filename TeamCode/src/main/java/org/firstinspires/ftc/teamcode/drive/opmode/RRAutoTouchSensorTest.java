@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,6 +24,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+@Disabled
 @Autonomous(name = "Auto: Touch Sensor Test", group = "Test")
 public class RRAutoTouchSensorTest extends LinearOpMode {
 
@@ -138,7 +140,6 @@ public class RRAutoTouchSensorTest extends LinearOpMode {
                                 .lineToLinearHeading(stackPose,
                                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                                .waitSeconds(COLLECT_PAUSE)
                                 .addTemporalMarker(()->{
                                     liftState.set(LiftState.LIFT_COLLECT1);
                                 })
@@ -158,12 +159,14 @@ public class RRAutoTouchSensorTest extends LinearOpMode {
                     if (!clawDistance.coneDetected()) {
                         drive.setWeightedDrivePower(
                                 new Pose2d(
-                                        .5,
+                                        .1,
                                         0,
                                         0
                                 ));
+                        telemetry.addData("Distance From Cone",clawDistance.getDistance());
+                        telemetry.update();
                     }
-                    else if (clawDistance.coneDetected()) {
+                    else if (clawDistance.coneDetected() && firstState) {
                         drive.setWeightedDrivePower(
                                 new Pose2d(
                                         0,
@@ -171,8 +174,7 @@ public class RRAutoTouchSensorTest extends LinearOpMode {
                                         0
                                 ));
                         claw.closeClaw();
-                    }
-                    if (firstState && liftTimer.seconds() >= DROP_PAUSE) {
+
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .waitSeconds(.3)
                                 .addTemporalMarker(() -> {

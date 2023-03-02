@@ -36,7 +36,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
  * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
@@ -49,9 +48,9 @@ import com.qualcomm.robotcore.util.Range;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
 @Disabled
+@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
+
 public class BasicOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members.
@@ -113,3 +112,4 @@ public class BasicOpMode_Linear extends LinearOpMode {
         }
     }
 }
+
