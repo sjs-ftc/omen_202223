@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.Angler;
 import org.firstinspires.ftc.teamcode.drive.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.drive.Claw;
+import org.firstinspires.ftc.teamcode.drive.ClawSwitch;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Autonomous(name = "Left", group = "a")
+@Autonomous(name = "High Left", group = "a")
 public class AutoRobotToWallLeft extends LinearOpMode {
 
     public enum LiftState {
@@ -84,6 +85,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
 
     Pose2d startPose = BLstartPose;
     Pose2d stackPose = BLstackPose;
+    Pose2d stackReadyPose = BLstackReadyPose;
     Pose2d dropPose = BLdropPose;
     Pose2d cone5Pose = BLcone5Pose;
     Pose2d readyPose = BLreadyPose;
@@ -117,6 +119,8 @@ public class AutoRobotToWallLeft extends LinearOpMode {
         Lift lift = new Lift(this, hardwareMap, telemetry);
         TouchSensor touchLeft = hardwareMap.get(TouchSensor.class,"leftTouch");
         TouchSensor touchRight = hardwareMap.get(TouchSensor.class,"rightTouch");
+        ClawSwitch clawSwitch = new ClawSwitch(this,hardwareMap);
+
 
         AtomicBoolean firstState = new AtomicBoolean(true);
         AtomicReference<LiftState> liftState = new AtomicReference<>(LiftState.LIFT_START);
@@ -132,9 +136,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
         telemetry.update();
 
         claw.closeClaw();
-        lift.setTargetHeight(SAFE_HEIGHT);
         while (!isStarted() && !isStopRequested()) {
-            lift.update();
             angler.setAngle(START_ANGLE);
 
             telemetry.addData("Command","April Tags Running");
@@ -218,10 +220,10 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                     break;
                 }
                 case LIFT_DROP1: {
-                    angler.setAngle(AUTO_STACK_5);
+                    angler.setAngle(STACK_5);
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
-                        lift.setTargetHeight(AUTO_COLLECT_HEIGHT_5);
+                        lift.setTargetHeight(MINIMUM_HEIGHT);
                         liftState.set(LiftState.LIFT_COLLECTWAIT1);
                         liftTimer.reset();
                     }
@@ -243,18 +245,19 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         liftTimer.reset();
                         firstState.set(false);
-                        claw.collect();
+                        claw.autoCollect();
                     }
-                    if ((touchLeft.isPressed() || touchRight.isPressed()) && firstState.get()) {
-                        drive.setPoseEstimate(new Pose2d(stackPose.getX()-BLstackAdjust,drive.getPoseEstimate().getY(),drive.getPoseEstimate().getHeading()));
+                    if (clawSwitch.isPressed()) {
+                        liftTimer.reset();
+                        liftState.set(LiftState.LIFT_COLLECT1);
+                        firstState.set(true);
+                        drive.setPoseEstimate(stackPose);
                     }
                     break;
                 }
                 case LIFT_COLLECT1: {
-                    if ((touchLeft.isPressed() || touchRight.isPressed()) && firstState.get()) {
-                        drive.setPoseEstimate(new Pose2d(stackPose.getX()-BLstackAdjust,drive.getPoseEstimate().getY(),drive.getPoseEstimate().getHeading()));
-                    }
                     claw.closeClaw();
+                    angler.setAngle(HORIZ_ANGLE);
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {
@@ -269,7 +272,6 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                                 .build();
 
 
-                        angler.setAngle(HORIZ_ANGLE);
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         firstState.set(false);
                     }
@@ -291,10 +293,10 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                     break;
                 }
                 case LIFT_DROP2: {
-                    angler.setAngle(AUTO_STACK_4);
+                    angler.setAngle(STACK_4);
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
-                        lift.setTargetHeight(AUTO_COLLECT_HEIGHT_4);
+                        lift.setTargetHeight(MINIMUM_HEIGHT);
                         liftState.set(LiftState.LIFT_COLLECTWAIT2);
                         liftTimer.reset();
                     }
@@ -316,18 +318,20 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         liftTimer.reset();
                         firstState.set(false);
-                        claw.collect();
+                        claw.autoCollect();
                     }
-                    if ((touchLeft.isPressed() || touchRight.isPressed()) && firstState.get()) {
-                        drive.setPoseEstimate(new Pose2d(stackPose.getX()-BLstackAdjust,drive.getPoseEstimate().getY(),drive.getPoseEstimate().getHeading()));
+                    if (clawSwitch.isPressed()) {
+                        liftTimer.reset();
+                        liftState.set(LiftState.LIFT_COLLECT2);
+                        firstState.set(true);
+                        drive.setPoseEstimate(stackPose);
+
                     }
                     break;
                 }
                 case LIFT_COLLECT2: {
-                    if ((touchLeft.isPressed() || touchRight.isPressed()) && firstState.get()) {
-                        drive.setPoseEstimate(new Pose2d(stackPose.getX()-BLstackAdjust,drive.getPoseEstimate().getY(),drive.getPoseEstimate().getHeading()));
-                    }
                     claw.closeClaw();
+                    angler.setAngle(HORIZ_ANGLE);
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {
@@ -342,7 +346,6 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                                 .build();
 
 
-                        angler.setAngle(HORIZ_ANGLE);
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         firstState.set(false);
                     }
@@ -364,10 +367,10 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                     break;
                 }
                 case LIFT_DROP3: {
-                    angler.setAngle(AUTO_STACK_3);
+                    angler.setAngle(STACK_3);
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
-                        lift.setTargetHeight(AUTO_COLLECT_HEIGHT_3);
+                        lift.setTargetHeight(MINIMUM_HEIGHT);
                         liftState.set(LiftState.LIFT_COLLECTWAIT3);
                         liftTimer.reset();
                     }
@@ -389,18 +392,20 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         liftTimer.reset();
                         firstState.set(false);
-                        claw.collect();
+                        claw.autoCollect();
                     }
-                    if ((touchLeft.isPressed() || touchRight.isPressed()) && firstState.get()) {
-                        drive.setPoseEstimate(new Pose2d(stackPose.getX()-BLstackAdjust,drive.getPoseEstimate().getY(),drive.getPoseEstimate().getHeading()));
+                    if (clawSwitch.isPressed()) {
+                        liftTimer.reset();
+                        liftState.set(LiftState.LIFT_COLLECT3);
+                        firstState.set(true);
+                        drive.setPoseEstimate(stackPose);
+
                     }
                     break;
                 }
                 case LIFT_COLLECT3: {
-                    if ((touchLeft.isPressed() || touchRight.isPressed()) && firstState.get()) {
-                        drive.setPoseEstimate(new Pose2d(stackPose.getX()-BLstackAdjust,drive.getPoseEstimate().getY(),drive.getPoseEstimate().getHeading()));
-                    }
                     claw.closeClaw();
+                    angler.setAngle(HORIZ_ANGLE);
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {
@@ -415,7 +420,6 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                                 .build();
 
 
-                        angler.setAngle(HORIZ_ANGLE);
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         firstState.set(false);
                     }
@@ -437,10 +441,10 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                     break;
                 }
                 case LIFT_DROP4: {
-                    angler.setAngle(AUTO_STACK_2);
+                    angler.setAngle(STACK_2);
                     if (liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
-                        lift.setTargetHeight(AUTO_COLLECT_HEIGHT_2);
+                        lift.setTargetHeight(MINIMUM_HEIGHT);
                         liftState.set(LiftState.LIFT_COLLECTWAIT4);
                         liftTimer.reset();
                     }
@@ -462,18 +466,19 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         liftTimer.reset();
                         firstState.set(false);
-                        claw.collect();
+                        claw.autoCollect();
                     }
-                    if ((touchLeft.isPressed() || touchRight.isPressed()) && firstState.get()) {
-                        drive.setPoseEstimate(new Pose2d(stackPose.getX()-BLstackAdjust,drive.getPoseEstimate().getY(),drive.getPoseEstimate().getHeading()));
+                    if (clawSwitch.isPressed()) {
+                        liftTimer.reset();
+                        liftState.set(LiftState.LIFT_COLLECT4);
+                        firstState.set(true);
                     }
                     break;
                 }
                 case LIFT_COLLECT4: {
-                    if ((touchLeft.isPressed() || touchRight.isPressed()) && firstState.get()) {
-                        drive.setPoseEstimate(new Pose2d(stackPose.getX()-BLstackAdjust,drive.getPoseEstimate().getY(),drive.getPoseEstimate().getHeading()));
-                    }
                     claw.closeClaw();
+                    angler.setAngle(HORIZ_ANGLE);
+
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {
@@ -488,7 +493,6 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                                 .build();
 
 
-                        angler.setAngle(HORIZ_ANGLE);
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         firstState.set(false);
                     }
@@ -535,18 +539,19 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         liftTimer.reset();
                         firstState.set(false);
-                        claw.collect();
+                        claw.autoCollect();
                     }
-                    if ((touchLeft.isPressed() || touchRight.isPressed()) && firstState.get()) {
-                        drive.setPoseEstimate(new Pose2d(stackPose.getX()-BLstackAdjust,drive.getPoseEstimate().getY(),drive.getPoseEstimate().getHeading()));
+                    if (clawSwitch.isPressed()) {
+                        liftTimer.reset();
+                        liftState.set(LiftState.LIFT_COLLECT5);
+                        firstState.set(true);
                     }
                     break;
                 }
                 case LIFT_COLLECT5: {
-                    if ((touchLeft.isPressed() || touchRight.isPressed()) && firstState.get()) {
-                        drive.setPoseEstimate(new Pose2d(stackPose.getX()-BLstackAdjust,drive.getPoseEstimate().getY(),drive.getPoseEstimate().getHeading()));
-                    }
                     claw.closeClaw();
+                    angler.setAngle(HORIZ_ANGLE);
+
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {
@@ -559,8 +564,6 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                 .build();
 
-
-                        angler.setAngle(HORIZ_ANGLE);
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         firstState.set(false);
                     }
@@ -632,7 +635,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                         drive.followTrajectorySequenceAsync(trajectorySequence);
                         firstState.set(false);
                     }
-                    angler.setAngle(GROUND_ANGLE);
+                    angler.setAngle(COLLECT_ANGLE);
                     claw.closeClaw();
 
                     break;

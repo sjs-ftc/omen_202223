@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.Angler;
 import org.firstinspires.ftc.teamcode.drive.Claw;
+import org.firstinspires.ftc.teamcode.drive.ClawSwitch;
 import org.firstinspires.ftc.teamcode.drive.Distances;
 import org.firstinspires.ftc.teamcode.drive.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -20,7 +21,7 @@ import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 @TeleOp(name="FSMMain", group = "a")
 public class FSMMain extends LinearOpMode {
 
-    double drivePower = DRIVE_POWER/4;
+    double drivePower = DRIVE_POWER/2;
 
     public enum LiftState {
         LIFT_START,
@@ -47,8 +48,9 @@ public class FSMMain extends LinearOpMode {
         Claw claw = new Claw(this, hardwareMap);
         Angler angler = new Angler(this, hardwareMap);
         Lift lift = new Lift(this, hardwareMap, telemetry);
+        ClawSwitch clawSwitch = new ClawSwitch(this,hardwareMap);
 
-        LiftState liftState = LiftState.LIFT_COLLECT;
+        LiftState liftState = LiftState.LIFT_RETRACT;
         ElapsedTime liftTimer = new ElapsedTime();
         ElapsedTime buttonTimer = new ElapsedTime();
         ElapsedTime buttonTimer2 = new ElapsedTime();
@@ -56,10 +58,13 @@ public class FSMMain extends LinearOpMode {
 
 
         int clawAngle = 0;
-        boolean powerToggle = true;
+        boolean switchActive = true;
+
         angler.setAngle(GROUND_ANGLE);
 
         waitForStart();
+
+        angler.setAngle(SAFE_ANGLE);
 
         boolean firstState = true;
         boolean clawOpen = false;
@@ -139,7 +144,7 @@ public class FSMMain extends LinearOpMode {
                 case LIFT_RETRACT: {
                     if (firstState && liftTimer.seconds() >= DROP_PAUSE) {
                         claw.closeClaw();
-                        angler.setAngle(GROUND_ANGLE);
+                        angler.setAngle(COLLECT_ANGLE);
                         liftTimer.reset();
                         firstState = false;
                     }
@@ -151,14 +156,19 @@ public class FSMMain extends LinearOpMode {
                         clawOpen = false;
                     }
                     if (lift.getHeight() >= (MINIMUM_HEIGHT - TICK_ERROR) && lift.getHeight() <= (MINIMUM_HEIGHT + TICK_ERROR)) {
-                        liftState = LiftState.LIFT_COLLECT;
                         liftTimer.reset();
                         firstState = true;
+                    }
+                    if (gamepad2.dpad_down && buttonTimer.seconds() >= BUTTON_PAUSE) {
+                        clawAngle = 0;
+                        claw.collect();
+                        angler.setAngle(GROUND_ANGLE);
+                        liftState = LiftState.LIFT_COLLECT;
                     }
                     break;
                     }
                 case LIFT_COLLECT: {
-                    if (gamepad2.dpad_up) {
+                    if (gamepad2.dpad_up || (clawSwitch.isPressed() && switchActive)) {
                         claw.closeClaw();
                         angler.setAngle(SAFE_ANGLE);
                         liftState = LiftState.LIFT_START;
@@ -216,7 +226,7 @@ public class FSMMain extends LinearOpMode {
                 drivePower = DRIVE_POWER;
             }
             else {
-                drivePower = DRIVE_POWER/4;
+                drivePower = DRIVE_POWER/2;
             }
             drive(drive, gamepad1);
 
@@ -225,6 +235,15 @@ public class FSMMain extends LinearOpMode {
 
             if (gamepad1.dpad_down) {
                 lift.setTargetHeight(lift.getHeight()-40);
+            }
+            if (gamepad1.b && buttonTimer3.seconds() >= BUTTON_PAUSE) {
+                if (switchActive) {
+                    switchActive = false;
+                }
+                else {
+                    switchActive = true;
+                }
+                buttonTimer3.reset();
             }
         }
 

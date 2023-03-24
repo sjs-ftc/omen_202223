@@ -29,6 +29,11 @@ public class Claw {
         clawServo.setPosition(servoPosition);
     }
 
+    public void autoCollect() {
+        servoPosition = AUTO_COLLECT;
+        clawServo.setPosition(servoPosition);
+    }
+
     public void dropCone() {
         servoPosition = DROP_OPEN;
         clawServo.setPosition(servoPosition);

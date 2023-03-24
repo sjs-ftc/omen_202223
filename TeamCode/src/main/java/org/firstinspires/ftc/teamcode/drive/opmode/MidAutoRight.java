@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Autonomous(name = "High Right", group = "a")
-public class AutoRobotToWallRight extends LinearOpMode {
+@Autonomous(name = "Mid Right", group = "a")
+public class MidAutoRight extends LinearOpMode {
 
     public enum LiftState {
         LIFT_START,
@@ -83,14 +83,14 @@ public class AutoRobotToWallRight extends LinearOpMode {
     AprilTagDetection tagOfInterest = null;
 
 
-    Pose2d startPose = BRstartPose;
-    Pose2d stackPose = BRstackPose;
-    Pose2d dropPose = BRdropPose;
-    Pose2d cone5Pose = BRcone5Pose;
-    Pose2d readyPose = BRreadyPose;
-    Pose2d parkingPose1 = BRparkingPose1;
-    Pose2d parkingPose2 = BRparkingPose2;
-    Pose2d parkingPose3 = BRparkingPose3;
+    Pose2d startPose = MRstartPose;
+    Pose2d stackPose = MRstackPose;
+    Pose2d dropPose = MRdropPose;
+    Pose2d cone5Pose = MRcone5Pose;
+    Pose2d readyPose = MRreadyPose;
+    Pose2d parkingPose1 = MRparkingPose1;
+    Pose2d parkingPose2 = MRparkingPose2;
+    Pose2d parkingPose3 = MRparkingPose3;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -205,7 +205,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                 }
                 case LIFT_HIGH1: {
                     angler.setAngle(HORIZ_ANGLE);
-                    lift.setTargetHeight(HIGH_JUNCTION);
+                    lift.setTargetHeight(MID_JUNCTION);
                     if (lift.stalling && firstState.get()) {
                         liftTimer.reset();
                         firstState.set(false);
@@ -258,7 +258,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {
-                                    lift.setTargetHeight(HIGH_JUNCTION);
+                                    lift.setTargetHeight(MID_JUNCTION);
                                     liftState.set(LiftState.LIFT_HIGH2);
                                     firstState.set(true);
                                     liftTimer.reset();
@@ -276,7 +276,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                 }
                 case LIFT_HIGH2: {
                     angler.setAngle(HORIZ_ANGLE);
-                    lift.setTargetHeight(HIGH_JUNCTION);
+                    lift.setTargetHeight(MID_JUNCTION);
                     if (lift.stalling && firstState.get()) {
                         liftTimer.reset();
                         firstState.set(false);
@@ -329,7 +329,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {
-                                    lift.setTargetHeight(HIGH_JUNCTION);
+                                    lift.setTargetHeight(MID_JUNCTION);
                                     liftState.set(LiftState.LIFT_HIGH3);
                                     firstState.set(true);
                                     liftTimer.reset();
@@ -347,7 +347,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                 }
                 case LIFT_HIGH3: {
                     angler.setAngle(HORIZ_ANGLE);
-                    lift.setTargetHeight(HIGH_JUNCTION);
+                    lift.setTargetHeight(MID_JUNCTION);
                     if (lift.stalling && firstState.get()) {
                         liftTimer.reset();
                         firstState.set(false);
@@ -400,7 +400,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {
-                                    lift.setTargetHeight(HIGH_JUNCTION);
+                                    lift.setTargetHeight(MID_JUNCTION);
                                     liftState.set(LiftState.LIFT_HIGH4);
                                     firstState.set(true);
                                     liftTimer.reset();
@@ -418,7 +418,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                 }
                 case LIFT_HIGH4: {
                     angler.setAngle(HORIZ_ANGLE);
-                    lift.setTargetHeight(HIGH_JUNCTION);
+                    lift.setTargetHeight(MID_JUNCTION);
                     if (lift.stalling && firstState.get()) {
                         liftTimer.reset();
                         firstState.set(false);
@@ -472,7 +472,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {
-                                    lift.setTargetHeight(HIGH_JUNCTION);
+                                    lift.setTargetHeight(MID_JUNCTION);
                                     liftState.set(LiftState.LIFT_HIGH5);
                                     firstState.set(true);
                                     liftTimer.reset();
@@ -490,7 +490,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                 }
                 case LIFT_HIGH5: {
                     angler.setAngle(HORIZ_ANGLE);
-                    lift.setTargetHeight(HIGH_JUNCTION);
+                    lift.setTargetHeight(MID_JUNCTION);
                     if (lift.stalling && firstState.get()) {
                         liftTimer.reset();
                         firstState.set(false);
@@ -544,7 +544,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {
-                                    lift.setTargetHeight(HIGH_JUNCTION);
+                                    lift.setTargetHeight(MID_JUNCTION);
                                     liftState.set(LiftState.LIFT_HIGH6);
                                     firstState.set(true);
                                 })
@@ -560,7 +560,7 @@ public class AutoRobotToWallRight extends LinearOpMode {
                 }
                 case LIFT_HIGH6: {
                     angler.setAngle(HORIZ_ANGLE);
-                    lift.setTargetHeight(HIGH_JUNCTION);
+                    lift.setTargetHeight(MID_JUNCTION);
                     if (lift.stalling && firstState.get()) {
                         liftTimer.reset();
                         firstState.set(false);
