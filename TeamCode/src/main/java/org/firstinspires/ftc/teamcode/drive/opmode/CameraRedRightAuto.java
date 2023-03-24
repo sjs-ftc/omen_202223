@@ -6,14 +6,9 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.drive.Angler;
 import org.firstinspires.ftc.teamcode.drive.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.drive.Claw;
@@ -27,7 +22,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Disabled
@@ -85,14 +79,14 @@ public class CameraRedRightAuto extends LinearOpMode {
     AprilTagDetection tagOfInterest = null;
 
 
-    Pose2d startPose = BRstartPose;
-    Pose2d stackPose = BRstackPose;
-    Pose2d dropPose = BRdropPose;
-    Pose2d cone5Pose = BRcone5Pose;
-    Pose2d readyPose = BRreadyPose;
-    Pose2d parkingPose1 = BRparkingPose1;
-    Pose2d parkingPose2 = BRparkingPose2;
-    Pose2d parkingPose3 = BRparkingPose3;
+    Pose2d startPose = HRstartPose;
+    Pose2d stackPose = HRstackPose;
+    Pose2d dropPose = HRdropPose;
+    Pose2d cone5Pose = HRcone5Pose;
+    Pose2d readyPose = HRreadyPose;
+    Pose2d parkingPose1 = HRparkingPose1;
+    Pose2d parkingPose2 = HRparkingPose2;
+    Pose2d parkingPose3 = HRparkingPose3;
 
     @Override
     public void runOpMode() throws InterruptedException {

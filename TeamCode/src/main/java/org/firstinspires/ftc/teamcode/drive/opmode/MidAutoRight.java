@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Disabled
 @Autonomous(name = "Mid Right", group = "a")
 public class MidAutoRight extends LinearOpMode {
 
@@ -182,11 +184,11 @@ public class MidAutoRight extends LinearOpMode {
                 .lineToLinearHeading(readyPose,
                         SampleMecanumDrive.getVelocityConstraint(TRAJECTORY_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToLinearHeading(dropPose)
                 .addTemporalMarker(() -> {
                     liftState.set(LiftState.LIFT_HIGH1);
                     firstState.set(true);
                 })
-                .lineToLinearHeading(dropPose)
                 .build();
 
         drive.setPoseEstimate(startPose);

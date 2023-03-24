@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -19,7 +17,6 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -83,14 +80,14 @@ public class AutoRobotToWallRight extends LinearOpMode {
     AprilTagDetection tagOfInterest = null;
 
 
-    Pose2d startPose = BRstartPose;
-    Pose2d stackPose = BRstackPose;
-    Pose2d dropPose = BRdropPose;
-    Pose2d cone5Pose = BRcone5Pose;
-    Pose2d readyPose = BRreadyPose;
-    Pose2d parkingPose1 = BRparkingPose1;
-    Pose2d parkingPose2 = BRparkingPose2;
-    Pose2d parkingPose3 = BRparkingPose3;
+    Pose2d startPose = HRstartPose;
+    Pose2d stackPose = HRstackPose;
+    Pose2d dropPose = HRdropPose;
+    Pose2d cone5Pose = HRcone5Pose;
+    Pose2d readyPose = HRreadyPose;
+    Pose2d parkingPose1 = HRparkingPose1;
+    Pose2d parkingPose2 = HRparkingPose2;
+    Pose2d parkingPose3 = HRparkingPose3;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -116,8 +113,6 @@ public class AutoRobotToWallRight extends LinearOpMode {
         Claw claw = new Claw(this, hardwareMap);
         Angler angler = new Angler(this, hardwareMap);
         Lift lift = new Lift(this, hardwareMap, telemetry);
-        TouchSensor touchLeft = hardwareMap.get(TouchSensor.class,"leftTouch");
-        TouchSensor touchRight = hardwareMap.get(TouchSensor.class,"rightTouch");
         ClawSwitch clawSwitch = new ClawSwitch(this,hardwareMap);
 
 

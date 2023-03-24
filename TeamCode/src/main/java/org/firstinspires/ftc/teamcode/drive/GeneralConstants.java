@@ -21,7 +21,7 @@ public final class GeneralConstants {
     public static int AUTO_COLLECT_HEIGHT_5 = 340;
     public static int GROUND_JUNCTION = 250;
     public static double PAUSE_TIME = 1.3;
-    public static double COLLECT_PAUSE = 0.2;
+    public static double COLLECT_PAUSE = 0.5;
     public static double DROP_PAUSE = .5;
     public static double TICK_ERROR = 5;
     public static double BUTTON_PAUSE = .2;
@@ -48,7 +48,7 @@ public final class GeneralConstants {
     public static double MIN_ANGLE = .0;
     public static double SAFE_ANGLE = .15;
     public static double GROUND_ANGLE = .99;
-    public static double START_ANGLE = .15;
+    public static double START_ANGLE = .17;
     public static double CALIBRATION_ANGLE = 1.0;
     public static double COLLECT_ANGLE = .3;
 
@@ -56,7 +56,7 @@ public final class GeneralConstants {
     public static double STACK_2 = .92;
     public static double STACK_3 = .86;
     public static double STACK_4 = .83;
-    public static double STACK_5 = .78;
+    public static double STACK_5 = .79;
 
     //Autonomous
         public static double AUTO_STACK_1 = 1;
@@ -69,7 +69,7 @@ public final class GeneralConstants {
     //Claw
     public static double CLOSED_POS = 0.7;
     public static double COLLECT = 0.6;
-    public static double AUTO_COLLECT = 0.55;
+    public static double AUTO_COLLECT = 0.57;
     public static double DROP_OPEN = 0.6;
     public static double OPEN_POS = 0.6;
 
@@ -97,15 +97,16 @@ public final class GeneralConstants {
 
         //Mid Left
             public static double MLstackAdjust = 1.0;
-            public static Pose2d MLstartPose = new Pose2d(34, -64, 3*Math.PI/2);
-            public static Pose2d MLstackPose = new Pose2d(57,-14.5,0);
-            public static Pose2d MLcone5Pose = new Pose2d(58.5,-14,0);
-            public static Pose2d MLdropPose = new Pose2d(37,-13,Math.toRadians(38));
-            public static Pose2d MLdropreadyPose = new Pose2d(45,-12.5,Math.toRadians(-20));
-            public static Pose2d MLreadyPose = new Pose2d(36,-14,3*Math.PI/2);
-            public static Pose2d MLparkingPose1 = new Pose2d(60,-12,0);
-            public static Pose2d MLparkingPose2 = new Pose2d(42,-12,0);
-            public static Pose2d MLparkingPose3 = new Pose2d(15,-12,0);
+            public static Pose2d MLstartPose = new Pose2d(-34, -64, 3*Math.PI/2);
+            public static Pose2d MLstackPose = new Pose2d(-57,-13,Math.PI);
+            public static Pose2d MLstackReadyPose = new Pose2d(-53,-13,Math.PI);
+            public static Pose2d MLcone5Pose = new Pose2d(-58.5,-13,Math.PI);
+            public static Pose2d MLdropPose = new Pose2d(-33,-15,Math.toRadians(142));
+            public static Pose2d MLdropreadyPose = new Pose2d(-45,-12.5,Math.toRadians(200));
+            public static Pose2d MLreadyPose = new Pose2d(-36,-14,3*Math.PI/2);
+            public static Pose2d MLparkingPose1 = new Pose2d(-60,-12,Math.PI);
+            public static Pose2d MLparkingPose2 = new Pose2d(-42,-12,Math.PI);
+            public static Pose2d MLparkingPose3 = new Pose2d(-15,-12,Math.PI);
 
         //Left
             public static Pose2d LstartPose = new Pose2d(-34, -63, 3*Math.PI/2);
@@ -119,29 +120,29 @@ public final class GeneralConstants {
 
 
     //Blue Right
-            public static double BRstackAdjust = 1.0;
-            public static Pose2d BRstartPose = new Pose2d(34, -64, 3*Math.PI/2);
-            public static Pose2d BRstackPose = new Pose2d(57,-14.5,0);
-            public static Pose2d BRcone5Pose = new Pose2d(58.5,-14,0);
-            public static Pose2d BRdropPose = new Pose2d(39,-13,Math.toRadians(-38));
-            public static Pose2d BRdropreadyPose = new Pose2d(45,-12.5,Math.toRadians(-20));
-            public static Pose2d BRreadyPose = new Pose2d(36,-14,3*Math.PI/2);
-            public static Pose2d BRparkingPose1 = new Pose2d(60,-12,0);
-            public static Pose2d BRparkingPose2 = new Pose2d(42,-12,0);
-            public static Pose2d BRparkingPose3 = new Pose2d(15,-12,0);
+            public static double HRstackAdjust = 1.0;
+            public static Pose2d HRstartPose = new Pose2d(34, -64, 3*Math.PI/2);
+            public static Pose2d HRstackPose = new Pose2d(57,-14.5,0);
+            public static Pose2d HRcone5Pose = new Pose2d(58.5,-14,0);
+            public static Pose2d HRdropPose = new Pose2d(39,-13,Math.toRadians(-38));
+            public static Pose2d HRdropreadyPose = new Pose2d(45,-12.5,Math.toRadians(-20));
+            public static Pose2d HRreadyPose = new Pose2d(36,-14,3*Math.PI/2);
+            public static Pose2d HRparkingPose1 = new Pose2d(60,-12,0);
+            public static Pose2d HRparkingPose2 = new Pose2d(42,-12,0);
+            public static Pose2d HRparkingPose3 = new Pose2d(15,-12,0);
 
-        //Blue Left
-            public static double BLstackAdjust = 1.0;
-            public static Pose2d BLstartPose = new Pose2d(-34, -64, 3*Math.PI/2);
-            public static Pose2d BLstackPose = new Pose2d(-57,-13,Math.PI);
-            public static Pose2d BLstackReadyPose = new Pose2d(-53,-13,Math.PI);
-            public static Pose2d BLcone5Pose = new Pose2d(-58.5,-13,Math.PI);
-            public static Pose2d BLdropPose = new Pose2d(-35,-12,Math.toRadians(218));
-            public static Pose2d BLdropreadyPose = new Pose2d(-45,-12.5,Math.toRadians(200));
-            public static Pose2d BLreadyPose = new Pose2d(-36,-14,3*Math.PI/2);
-            public static Pose2d BLparkingPose1 = new Pose2d(-60,-12,Math.PI);
-            public static Pose2d BLparkingPose2 = new Pose2d(-42,-12,Math.PI);
-            public static Pose2d BLparkingPose3 = new Pose2d(-15,-12,Math.PI);
+        //High Left
+            public static double HLstackAdjust = 1.0;
+            public static Pose2d HLstartPose = new Pose2d(-34, -64, 3*Math.PI/2);
+            public static Pose2d HLstackPose = new Pose2d(-57,-13,Math.PI);
+            public static Pose2d HLstackReadyPose = new Pose2d(-53,-13,Math.PI);
+            public static Pose2d HLcone5Pose = new Pose2d(-58.5,-13,Math.PI);
+            public static Pose2d HLdropPose = new Pose2d(-37,-12,Math.toRadians(216));
+            public static Pose2d HLdropreadyPose = new Pose2d(-45,-12.5,Math.toRadians(200));
+            public static Pose2d HLreadyPose = new Pose2d(-36,-14,3*Math.PI/2);
+            public static Pose2d HLparkingPose1 = new Pose2d(-63,-12,Math.PI);
+            public static Pose2d HLparkingPose2 = new Pose2d(-39,-12,Math.PI);
+            public static Pose2d HLparkingPose3 = new Pose2d(-12,-12,Math.PI);
 
     //Vuforia
         public static float MIN_CONFIDENCE = .65f;

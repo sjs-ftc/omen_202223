@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 import static org.firstinspires.ftc.teamcode.drive.GeneralConstants.*;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -19,7 +17,6 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -83,15 +80,15 @@ public class AutoRobotToWallLeft extends LinearOpMode {
     AprilTagDetection tagOfInterest = null;
 
 
-    Pose2d startPose = BLstartPose;
-    Pose2d stackPose = BLstackPose;
-    Pose2d stackReadyPose = BLstackReadyPose;
-    Pose2d dropPose = BLdropPose;
-    Pose2d cone5Pose = BLcone5Pose;
-    Pose2d readyPose = BLreadyPose;
-    Pose2d parkingPose1 = BLparkingPose1;
-    Pose2d parkingPose2 = BLparkingPose2;
-    Pose2d parkingPose3 = BLparkingPose3;
+    Pose2d startPose = HLstartPose;
+    Pose2d stackPose = HLstackPose;
+    Pose2d stackReadyPose = HLstackReadyPose;
+    Pose2d dropPose = HLdropPose;
+    Pose2d cone5Pose = HLcone5Pose;
+    Pose2d readyPose = HLreadyPose;
+    Pose2d parkingPose1 = HLparkingPose1;
+    Pose2d parkingPose2 = HLparkingPose2;
+    Pose2d parkingPose3 = HLparkingPose3;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -117,8 +114,6 @@ public class AutoRobotToWallLeft extends LinearOpMode {
         Claw claw = new Claw(this, hardwareMap);
         Angler angler = new Angler(this, hardwareMap);
         Lift lift = new Lift(this, hardwareMap, telemetry);
-        TouchSensor touchLeft = hardwareMap.get(TouchSensor.class,"leftTouch");
-        TouchSensor touchRight = hardwareMap.get(TouchSensor.class,"rightTouch");
         ClawSwitch clawSwitch = new ClawSwitch(this,hardwareMap);
 
 
@@ -256,8 +251,8 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                     break;
                 }
                 case LIFT_COLLECT1: {
-                    claw.closeClaw();
                     angler.setAngle(HORIZ_ANGLE);
+                    claw.closeClaw();
                     if (firstState.get() && liftTimer.seconds() >= COLLECT_PAUSE) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() -> {

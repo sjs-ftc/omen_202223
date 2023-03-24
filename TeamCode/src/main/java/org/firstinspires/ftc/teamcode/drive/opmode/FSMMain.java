@@ -60,8 +60,6 @@ public class FSMMain extends LinearOpMode {
         int clawAngle = 0;
         boolean switchActive = true;
 
-        angler.setAngle(GROUND_ANGLE);
-
         waitForStart();
 
         angler.setAngle(SAFE_ANGLE);
