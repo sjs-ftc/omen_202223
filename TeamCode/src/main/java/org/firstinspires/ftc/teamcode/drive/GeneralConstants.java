@@ -21,7 +21,7 @@ public final class GeneralConstants {
     public static int AUTO_COLLECT_HEIGHT_5 = 340;
     public static int GROUND_JUNCTION = 250;
     public static double PAUSE_TIME = 1.3;
-    public static double COLLECT_PAUSE = 0.5;
+    public static double COLLECT_PAUSE = 0.7;
     public static double DROP_PAUSE = .5;
     public static double TICK_ERROR = 5;
     public static double BUTTON_PAUSE = .2;
@@ -69,7 +69,7 @@ public final class GeneralConstants {
     //Claw
     public static double CLOSED_POS = 0.7;
     public static double COLLECT = 0.6;
-    public static double AUTO_COLLECT = 0.57;
+    public static double AUTO_COLLECT = 0.575;
     public static double DROP_OPEN = 0.6;
     public static double OPEN_POS = 0.6;
 
@@ -133,11 +133,15 @@ public final class GeneralConstants {
 
         //High Left
             public static double HLstackAdjust = 1.0;
-            public static Pose2d HLstartPose = new Pose2d(-34, -64, 3*Math.PI/2);
-            public static Pose2d HLstackPose = new Pose2d(-57,-13,Math.PI);
+            public static Pose2d HLstartPose = new Pose2d(-34, -63, 3*Math.PI/2);
+            public static Pose2d HLstackPose1 = new Pose2d(-57,-14,Math.PI);
+            public static Pose2d HLstackPose2 = new Pose2d(-57,-13,Math.PI);
+            public static Pose2d HLstackPose3 = new Pose2d(-57,-12,Math.PI);
+            public static Pose2d HLstackPose4 = new Pose2d(-57,-11,Math.PI);
+            public static Pose2d HLstackPose5 = new Pose2d(-58,-10,Math.PI);
             public static Pose2d HLstackReadyPose = new Pose2d(-53,-13,Math.PI);
-            public static Pose2d HLcone5Pose = new Pose2d(-58.5,-13,Math.PI);
-            public static Pose2d HLdropPose = new Pose2d(-37,-12,Math.toRadians(216));
+            public static Pose2d HLcone5Pose = new Pose2d(-57.5,-11,Math.PI);
+            public static Pose2d HLdropPose = new Pose2d(-37,-12,Math.toRadians(213));
             public static Pose2d HLdropreadyPose = new Pose2d(-45,-12.5,Math.toRadians(200));
             public static Pose2d HLreadyPose = new Pose2d(-36,-14,3*Math.PI/2);
             public static Pose2d HLparkingPose1 = new Pose2d(-63,-12,Math.PI);

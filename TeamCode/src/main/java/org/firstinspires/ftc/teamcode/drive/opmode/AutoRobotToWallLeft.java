@@ -81,7 +81,6 @@ public class AutoRobotToWallLeft extends LinearOpMode {
 
 
     Pose2d startPose = HLstartPose;
-    Pose2d stackPose = HLstackPose;
     Pose2d stackReadyPose = HLstackReadyPose;
     Pose2d dropPose = HLdropPose;
     Pose2d cone5Pose = HLcone5Pose;
@@ -227,7 +226,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                 case LIFT_COLLECTWAIT1: {
                     if (lift.getHeight() < MID_JUNCTION && firstState.get()) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .lineToLinearHeading(stackPose,
+                                .lineToLinearHeading(HLstackPose1,
                                         SampleMecanumDrive.getVelocityConstraint(TRAJECTORY_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                 .addTemporalMarker(() -> {
@@ -246,7 +245,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                         liftTimer.reset();
                         liftState.set(LiftState.LIFT_COLLECT1);
                         firstState.set(true);
-                        drive.setPoseEstimate(stackPose);
+                        drive.setPoseEstimate(HLstackPose1);
                     }
                     break;
                 }
@@ -300,7 +299,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                 case LIFT_COLLECTWAIT2: {
                     if (lift.getHeight() < MID_JUNCTION && firstState.get()) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .lineToLinearHeading(stackPose,
+                                .lineToLinearHeading(HLstackPose2,
                                         SampleMecanumDrive.getVelocityConstraint(TRAJECTORY_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                 .addTemporalMarker(() -> {
@@ -319,7 +318,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                         liftTimer.reset();
                         liftState.set(LiftState.LIFT_COLLECT2);
                         firstState.set(true);
-                        drive.setPoseEstimate(stackPose);
+                        drive.setPoseEstimate(HLstackPose2);
 
                     }
                     break;
@@ -374,7 +373,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                 case LIFT_COLLECTWAIT3: {
                     if (lift.getHeight() < MID_JUNCTION && firstState.get()) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .lineToLinearHeading(stackPose,
+                                .lineToLinearHeading(HLstackPose3,
                                         SampleMecanumDrive.getVelocityConstraint(TRAJECTORY_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                 .addTemporalMarker(() -> {
@@ -393,7 +392,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                         liftTimer.reset();
                         liftState.set(LiftState.LIFT_COLLECT3);
                         firstState.set(true);
-                        drive.setPoseEstimate(stackPose);
+                        drive.setPoseEstimate(HLstackPose3);
 
                     }
                     break;
@@ -448,7 +447,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                 case LIFT_COLLECTWAIT4: {
                     if (lift.getHeight() < MID_JUNCTION && firstState.get()) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .lineToLinearHeading(stackPose,
+                                .lineToLinearHeading(HLstackPose4,
                                         SampleMecanumDrive.getVelocityConstraint(TRAJECTORY_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                 .addTemporalMarker(() -> {
@@ -521,7 +520,7 @@ public class AutoRobotToWallLeft extends LinearOpMode {
                 case LIFT_COLLECTWAIT5: {
                     if (lift.getHeight() < MID_JUNCTION && firstState.get()) {
                         trajectorySequence = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .lineToLinearHeading(cone5Pose,
+                                .lineToLinearHeading(HLstackPose5,
                                         SampleMecanumDrive.getVelocityConstraint(TRAJECTORY_VELOCITY, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                                 .addTemporalMarker(() -> {

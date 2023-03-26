@@ -56,7 +56,7 @@ public class CameraBlueLeftAuto extends LinearOpMode {
     }
 
     Pose2d startPose = HLstartPose;
-    Pose2d stackPose = HLstackPose;
+    Pose2d stackPose = HLstackPose1;
     Pose2d dropPose = HLdropPose;
     Pose2d readyPose = HLreadyPose;
     Pose2d parkingPose1 = HLparkingPose1;

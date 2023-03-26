@@ -54,7 +54,7 @@ public class AutoTrajectoryLeft extends LinearOpMode {
 
 
     Pose2d startPose = HLstartPose;
-    Pose2d stackPose = HLstackPose;
+    Pose2d stackPose = HLstackPose1;
     Pose2d dropPose = HLdropPose;
     Pose2d cone5Pose = HLcone5Pose;
     Pose2d readyPose = HLreadyPose;
